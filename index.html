@@ -1,0 +1,2021 @@
+<!-- ... existing code ... -->
+    <!-- Google Fonts: Kantumruy Pro (Khmer) & Inter (English) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- TradingView Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['"Kantumruy Pro"', '"Inter"', 'sans-serif'],
+                        },
+                        colors: {
+                            slate: {
+                                850: '#151e2e',
+                                900: '#0f172a',
+                                950: '#090d16',
+                            },
+                            gold: {
+                                400: '#fbbf24',
+                                500: '#f59e0b',
+                                600: '#d97706',
+                            }
+                        }
+                    }
+                }
+            };
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: 'Kantumruy Pro', 'Inter', sans-serif;
+            line-height: 1.65;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.92));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+        }
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .4; }
+        }
+        .drop-zone-active {
+            border-color: #f59e0b !important;
+            background-color: rgba(245, 158, 11, 0.1) !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-extrabold shadow-lg shadow-amber-500/20">
+                    <i data-lucide="coins" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        <span data-i18n="appTitle">ជំនួយការ Trade មាស AI 24/24</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 font-semibold">XAU/USD</span>
+                    </h1>
+                    <p class="text-xs text-slate-400" data-i18n="appSubtitle">ក្រាហ្វពិត + AI វិភាគ + Telegram Alert • ទុន $10 (Exness/MT5)</p>
+                </div>
+            </div>
+
+            <!-- Live Cambodia Time, Telegram Status & Language Switch -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Telegram 24/24 Quick Badge -->
+                <button onclick="switchTab('telegram')" id="headerTgStatus" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-400 hover:bg-sky-500/20 text-xs font-semibold transition">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span id="headerTgText" data-i18n="tgHeaderOff">Telegram: មិនទាន់ភ្ជាប់</span>
+                </button>
+
+                <!-- Cambodia Clock Badge -->
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+                    <span class="text-slate-400" data-i18n="khTimeLabel">ម៉ោងកម្ពុជា:</span>
+                    <span id="cambodiaClock" class="font-mono font-semibold text-slate-200">--:--:--</span>
+                    <span id="liveSessionBadge" class="px-2 py-0.5 rounded-md bg-slate-800 text-amber-400 font-medium">--</span>
+                </div>
+
+                <!-- Language Toggle -->
+                <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800">
+                    <button id="btnLangKm" onclick="setLanguage('km')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-500 text-slate-950 shadow">
+                        🇰🇭 ខ្មែរ
+                    </button>
+                    <button id="btnLangEn" onclick="setLanguage('en')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+                        🇺🇸 English
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-5 space-y-5">
+
+        <!-- Beginner Protection Banner -->
+        <div class="rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-rose-500/10 border border-amber-500/30 p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+                <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed" data-i18n="safetyDesc">
+                    <strong>ការពារទុន $10 របស់អ្នក៖</strong> លើ Exness សូមប្រើគណនី <strong>Standard Cent (USC)</strong> ($10 = 1,000 USC) ហើយដាក់ <strong>Stop Loss (SL)</strong> គ្រប់ Order ជានិច្ច។ ប្រើក្រាហ្វពិត និង AI ខាងក្រោមដើម្បីវិភាគមុនចូលទិញ/លក់។
+                </p>
+            </div>
+        </div>
+
+        <!-- Mobile Cambodia Time Bar -->
+        <div class="flex md:hidden items-center justify-between px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+                <span class="text-slate-400" data-i18n="khTimeLabel">ម៉ោងកម្ពុជា:</span>
+                <span id="cambodiaClockMobile" class="font-mono font-semibold text-white">--:--:--</span>
+            </div>
+            <span id="liveSessionBadgeMobile" class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 font-semibold">--</span>
+        </div>
+
+        <!-- Navigation Tabs (4 Core Modules) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800">
+            <button onclick="switchTab('live')" id="tab-live" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-amber-500 text-slate-950 shadow-md">
+                <i data-lucide="candlestick-chart" class="w-4 h-4"></i>
+                <span data-i18n="tabLive">១. ក្រាហ្វពិត & AI វិភាគ</span>
+            </button>
+            <button onclick="switchTab('telegram')" id="tab-telegram" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span data-i18n="tabTelegram">២. Telegram Alert 24/24</span>
+            </button>
+            <button onclick="switchTab('signal')" id="tab-signal" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white">
+                <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                <span data-i18n="tabSignal">៣. ពិនិត្យលក្ខខណ្ឌ Buy/Sell</span>
+            </button>
+            <button onclick="switchTab('risk')" id="tab-risk" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white">
+                <i data-lucide="calculator" class="w-4 h-4"></i>
+                <span data-i18n="tabRisk">៤. គណនា Lot ($10)</span>
+            </button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- SECTION 1: LIVE REAL-TIME GOLD CHART & INSTANT AI ANALYZER -->
+        <!-- ========================================================= -->
+        <section id="section-live" class="space-y-6">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                
+                <!-- Left/Top: Real-Time TradingView XAU/USD Chart (7 cols on XL) -->
+                <div class="xl:col-span-7 glass-card rounded-2xl p-4 sm:p-5 flex flex-col space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-dot"></span>
+                                <span data-i18n="liveChartTitle">ក្រាហ្វតម្លៃមាសពិតៗ (XAU/USD Live)</span>
+                            </h2>
+                            <p class="text-xs text-slate-400" data-i18n="liveChartSub">ទិន្នន័យតម្លៃទីផ្សារផ្ទាល់ • ប្តូរ Timeframe ដើម្បីមើលទិសដៅ</p>
+                        </div>
+
+                        <!-- Timeframe Quick Buttons -->
+                    <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                        <button onclick="changeChartTimeframe('15', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition">M15</button>
+                        <button onclick="changeChartTimeframe('60', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">H1</button>
+                        <button onclick="changeChartTimeframe('240', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">H4</button>
+                        <button onclick="changeChartTimeframe('D', this)" class="tf-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">D1</button>
+                        <button onclick="runZeroSnapshotAutoAnalysis(false)" id="btnInstantChartAuto" class="ml-1 px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 transition cursor-pointer">
+                            <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                            <span data-i18n="btnQuickAutoChart">Auto វិភាគភ្លាម</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TradingView Container -->
+                <div class="w-full h-[430px] sm:h-[500px] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative">
+                    <div id="tv_chart_container" class="w-full h-full"></div>
+                </div>
+
+                <!-- Chart Legend / Tip for Beginner -->
+                <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-slate-300">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                        <span data-i18n="chartCaptureTip">
+                            <strong>គន្លឹះថ្មី៖</strong> ប្រើមុខងារ <strong>Auto វិភាគ (គ្មាន Snapshot)</strong> ខាងស្តាំដើម្បីឱ្យ AI វិភាគតម្លៃ និងព័ត៌មានដោយស្វ័យប្រវត្តិ និងប្រាប់ពេល <strong>BUY / SELL / CLOSE</strong>!
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right/Bottom: AI Auto / Chart / News Instant Analyzer (5 cols on XL) -->
+            <div class="xl:col-span-5 glass-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-4">
+                <div class="space-y-4">
+                    <!-- AI Mode Switcher (3 Modes: Auto Live / Chart Snapshot / News) -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+                            <span data-i18n="aiMentorTitle">ជំនួយការ AI វិភាគផ្ទាល់</span>
+                        </h3>
+                        <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px]">
+                            <button id="btnAiModeAuto" onclick="switchAiMode('auto')" class="px-2.5 py-1 rounded-lg font-bold bg-emerald-500 text-slate-950 transition cursor-pointer" data-i18n="modeAutoBtn">
+                                ⚡ Auto (គ្មានរូប)
+                            </button>
+                            <button id="btnAiModeChart" onclick="switchAiMode('chart')" class="px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer" data-i18n="modeChartBtn">
+                                📊 រូបក្រាហ្វ
+                            </button>
+                            <button id="btnAiModeNews" onclick="switchAiMode('news')" class="px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer" data-i18n="modeNewsBtn">
+                                📰 ព័ត៌មាន
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MODE AUTO: ZERO-SNAPSHOT LIVE AUTO ANALYZER & POSITION MANAGER -->
+                    <div id="aiModeAutoPanel" class="space-y-3">
+                        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-200 space-y-1">
+                            <div class="font-bold text-emerald-400 flex items-center justify-between">
+                                <span data-i18n="autoModeBadge">⚡ វិភាគស្វ័យប្រវត្តិ (មិនបាច់ថតរូប Snapshot)</span>
+                                <span id="autoLoopStatusLabel" class="text-[10px] px-2 py-0.5 rounded bg-slate-950 text-slate-300 border border-slate-700">Auto Loop: OFF</span>
+                            </div>
+                            <p class="text-[11px] text-slate-300 leading-relaxed" data-i18n="autoModeDesc">
+                                ប្រព័ន្ធទាញទិន្នន័យតម្លៃមាស និងព័ត៌មានសេដ្ឋកិច្ចផ្ទាល់ ដើម្បីគណនា <strong>BUY / SELL / CLOSE POSITION</strong> និងផ្ញើ Alert ចូល Telegram រាល់ពេលការណែនាំផ្លាស់ប្តូរ!
+                            </p>
+                        </div>
+
+                        <!-- Current Open Position & Live Price Inputs for Exact Calculation -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-300 mb-1" data-i18n="lblLivePriceInput">តម្លៃមាសបច្ចុប្បន្ន</label>
+                                <input type="number" step="0.01" id="autoLivePrice" value="3615.20" class="w-full rounded-xl bg-slate-950 border border-slate-700 focus:border-emerald-500 px-2.5 py-2 text-xs font-mono text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-300 mb-1" data-i18n="lblOpenPosType">Order កំពុងបើក</label>
+                                <select id="autoOpenPosType" class="w-full rounded-xl bg-slate-950 border border-slate-700 focus:border-emerald-500 px-2 py-2 text-xs font-bold text-white outline-none">
+                                    <option value="NONE" selected data-i18n="posNone">គ្មាន Order បើកទេ</option>
+                                    <option value="BUY">កំពុង BUY</option>
+                                    <option value="SELL">កំពុង SELL</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-300 mb-1" data-i18n="lblOpenEntryPrice">តម្លៃចូល Order</label>
+                                <input type="number" step="0.01" id="autoOpenEntry" placeholder="ឧ. 3610.00" class="w-full rounded-xl bg-slate-950 border border-slate-700 focus:border-emerald-500 px-2.5 py-2 text-xs font-mono text-white outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons: Run Once vs Auto-Watch + Telegram Change Alert -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                            <button id="btnRunAutoNow" onclick="runZeroSnapshotAutoAnalysis(false)" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-300 hover:to-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i data-lucide="cpu" class="w-4 h-4"></i>
+                                <span data-i18n="btnRunAutoNow">គណនា BUY/SELL/CLOSE ឥឡូវ</span>
+                            </button>
+                            <button id="btnToggleAutoWatch" onclick="toggleZeroSnapshotAutoWatch()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-sky-500/40 text-sky-300 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                                <span id="btnAutoWatchLabel" data-i18n="btnStartAutoWatch">បើក Auto-Watch + TG Alert</span>
+                            </button>
+                        </div>
+
+                        <p class="text-[11px] text-slate-400" data-i18n="autoChangeAlertNote">
+                            * ពេលបើក <strong>Auto-Watch</strong> ប្រព័ន្ធនឹងពិនិត្យតម្លៃ និងព័ត៌មានរៀងរាល់ 2 នាទីម្តង ហើយ <strong>ផ្ញើ Alert ចូល Telegram ភ្លាម</strong> រាល់ពេលការណែនាំផ្លាស់ប្តូរ (ឧទាហរណ៍៖ ពី WAIT ទៅ BUY, ឬ ប្រាប់ឱ្យ CLOSE Order)។
+                        </p>
+                    </div>
+
+                    <!-- MODE A: AI CHART SCREENSHOT ANALYZER -->
+                    <div id="aiModeChartPanel" class="hidden space-y-3">
+                                <button onclick="clearChartImage(event)" class="text-xs px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 transition">
+                                    <span data-i18n="btnRemoveImg">លុបរូប</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="extraNoteLabel">សំណួរបន្ថែម (ស្រេចចិត្ត):</label>
+                            <input type="text" id="chartExtraNote" class="w-full rounded-xl bg-slate-950 border border-slate-700 focus:border-amber-500 px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" placeholder="ឧទាហរណ៍៖ តើខ្ញុំគួរ Buy ឬ រង់ចាំទៀត?">
+                        </div>
+
+                        <button id="btnAnalyzeChart" onclick="analyzeChartWithGemini()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                            <i data-lucide="scan-search" class="w-4 h-4"></i>
+                            <span data-i18n="btnRunChartAi">ឱ្យ AI វិភាគក្រាហ្វនេះឥឡូវ!</span>
+                        </button>
+                    </div>
+
+                    <!-- MODE B: LIVE NEWS FEED + COPY/PASTE FOREXFACTORY / INVESTING ANALYZER -->
+                    <div id="aiModeNewsPanel" class="hidden space-y-3">
+                        <!-- Live USD / Gold Economic News Feed Box -->
+                        <div class="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                                    <i data-lucide="newspaper" class="w-3.5 h-3.5"></i>
+                                    <span data-i18n="liveNewsFeedTitle">ព័ត៌មានសេដ្ឋកិច្ច USD / មាស ផ្ទាល់</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span id="liveNewsStatusBadge" class="text-[10px] px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-700">Ready</span>
+                                    <button type="button" onclick="fetchLiveGoldNewsFeed()" id="btnRefreshNewsFeed" class="text-[11px] px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold flex items-center gap-1 transition cursor-pointer">
+                                        <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                                        <span data-i18n="btnRefreshNews">ទាញព័ត៌មាន</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="liveGoldNewsList" class="max-h-40 overflow-y-auto space-y-1.5 text-xs text-slate-300 pr-1">
+                                <p class="text-[11px] text-slate-400" data-i18n="liveNewsHint">
+                                    ចុច <strong>ទាញព័ត៌មាន</strong> ដើម្បីមើលព័ត៌មានសេដ្ឋកិច្ច USD/មាស ចុងក្រោយ ឬ ចុចលើព័ត៌មានណាមួយដើម្បីយកមកវិភាគភ្លាម!
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Quick Sample Presets -->
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="text-[11px] text-slate-400" data-i18n="sampleLabel">គំរូ៖</span>
+                            <button type="button" onclick="loadSampleNews('cpi_low')" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 transition cursor-pointer">
+                                📉 CPI ទាប
+                            </button>
+                            <button type="button" onclick="loadSampleNews('nfp_strong')" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 transition cursor-pointer">
+                                💼 NFP ខ្លាំង
+                            </button>
+                            <button type="button" onclick="loadSampleNews('fed_cut')" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition cursor-pointer">
+                                🏦 Fed បញ្ចុះការប្រាក់
+                            </button>
+                        </div>
+
+                        <!-- Dedicated Copy-Paste Box for ForexFactory, Investing, or Any News -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <label for="newsInput" class="text-xs font-bold text-slate-200 flex items-center gap-1.5" data-i18n="pasteBoxLabel">
+                                    <i data-lucide="clipboard-paste" class="w-3.5 h-3.5 text-sky-400"></i>
+                                    Copy ពី ForexFactory / Investing ឬ ព័ត៌មានផ្សេងៗមក Paste ទីនេះ៖
+                                </label>
+                                <button type="button" onclick="pasteNewsFromClipboard()" class="text-[11px] px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 font-bold flex items-center gap-1 transition cursor-pointer">
+                                    <i data-lucide="clipboard" class="w-3 h-3"></i>
+                                    <span data-i18n="btnPasteNews">Paste ភ្លាម</span>
+                                </button>
+                            </div>
+                            <textarea id="newsInput" rows="4" class="w-full rounded-xl bg-slate-950/90 border border-slate-700 focus:border-amber-500 p-3 text-xs sm:text-sm text-white placeholder-slate-500 outline-none transition" placeholder="ចម្លងព័ត៌មានពី ForexFactory, Investing.com, Reuters ឬ Telegram មក Paste (Ctrl+V) ទីនេះ ដើម្បីឱ្យ AI វិភាគជូនភ្លាម..."></textarea>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btnAnalyzeNews" onclick="analyzeNewsWithGemini()" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                                <i data-lucide="bot" class="w-4 h-4"></i>
+                                <span data-i18n="btnAnalyze">វិភាគព័ត៌មានជាមួយ AI</span>
+                            </button>
+                            <button type="button" onclick="analyzeAndAlertTelegram()" class="py-2.5 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer" title="Analyze & Send to Telegram">
+                                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                                <span data-i18n="btnNewsToTg">វិភាគ + TG</span>
+                            </button>
+                            <button type="button" onclick="document.getElementById('newsInput').value=''" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition cursor-pointer">
+                                <span data-i18n="btnClear">សម្អាត</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- AI Loading Indicator -->
+                        <div id="aiLoadingBox" class="hidden py-8 text-center space-y-2.5 bg-slate-950/60 rounded-2xl border border-slate-800">
+                            <div class="w-9 h-9 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto"></div>
+                            <p class="text-xs sm:text-sm text-amber-300 font-semibold" data-i18n="aiLoadingText">AI កំពុងវិភាគទិន្នន័យ និងរកចំណុចសុវត្ថិភាព...</p>
+                        </div>
+
+                        <!-- AI Unified Output Card -->
+                        <div id="aiUnifiedResult" class="hidden space-y-3 pt-1">
+                            <!-- Verdict Banner -->
+                            <div id="aiVerdictBanner" class="p-3.5 rounded-xl border flex items-center justify-between">
+                                <div>
+                                    <span class="text-[11px] uppercase tracking-wider opacity-80" data-i18n="aiSignalTag">ការណែនាំរបស់ AI (XAU/USD):</span>
+                                    <h4 id="aiVerdictAction" class="text-base sm:text-lg font-extrabold mt-0.5">--</h4>
+                            <!-- Entry / SL / TP / PnL Calc Grid (Shown when Chart or Auto analyzed) -->
+                            <div id="aiLevelsGrid" class="hidden grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                                    <span class="text-[10px] text-slate-400 block" data-i18n="lblEntry">ចំណុចចូល / បិទ</span>
+                                    <span id="aiEntryVal" class="text-xs font-bold text-white">--</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900 border border-rose-500/30">
+                                    <span class="text-[10px] text-rose-400 block">Stop Loss (SL)</span>
+                                    <span id="aiSlVal" class="text-xs font-bold text-rose-300">--</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900 border border-emerald-500/30">
+                                    <span class="text-[10px] text-emerald-400 block">Take Profit (TP)</span>
+                                    <span id="aiTpVal" class="text-xs font-bold text-emerald-300">--</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900 border border-sky-500/30">
+                                    <span class="text-[10px] text-sky-400 block" data-i18n="lblCalcMetric">គណនា Pips / Lot</span>
+                                    <span id="aiCalcMetricVal" class="text-xs font-bold text-sky-300">--</span>
+                                </div>
+                            </div>
+
+                            <!-- Explanation Text -->
+                            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2 text-xs leading-relaxed">
+                                <div>
+                                    <span class="font-bold text-amber-400 block mb-0.5" data-i18n="summaryHeading">📌 ការវិភាគលម្អិត៖</span>
+                                    <p id="aiSummaryBody" class="text-slate-200"></p>
+                                </div>
+                                <div class="pt-1.5 border-t border-slate-800/80">
+                                    <span class="font-bold text-rose-400 block mb-0.5" data-i18n="adviceHeading">🛡️ ដំបូន្មានសម្រាប់ទុន $10:</span>
+                                    <p id="aiAdviceBody" class="text-rose-200/90"></p>
+                                </div>
+                            </div>
+
+                            <!-- 1-Click Send This AI Result to Telegram -->
+                            <button onclick="sendLastAiResultToTelegram()" class="w-full py-2.5 px-4 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                <span data-i18n="btnForwardTg">ផ្ញើលទ្ធផលវិភាគនេះចូល Telegram របស់ខ្ញុំ</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SECTION 2: 24/24 TELEGRAM ALERT & AUTOMATION CENTER        -->
+        <!-- ========================================================= -->
+        <section id="section-telegram" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left: Live Telegram Bot Setup & Browser Monitor (6 cols) -->
+                <div class="lg:col-span-6 glass-card rounded-2xl p-5 sm:p-6 space-y-5">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="send" class="w-5 h-5 text-sky-400"></i>
+                            <span data-i18n="tgSetupTitle">ភ្ជាប់ Telegram Bot ដើម្បីទទួល Alert</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1" data-i18n="tgSetupSub">
+                            បញ្ចូល Bot Token និង Chat ID របស់អ្នក ដើម្បីឱ្យប្រព័ន្ធផ្ញើសារដាស់តឿនពេលមានព័ត៌មានមាសប្រែប្រួល ឬ លទ្ធផលវិភាគ AI ចូលទូរសព្ទអ្នកផ្ទាល់។
+                        </p>
+                    </div>
+
+                    <!-- How to get Token & Chat ID Mini Guide -->
+                    <div class="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/25 text-xs text-sky-200 space-y-1">
+                        <div class="font-bold text-sky-400" data-i18n="tgHowToTitle">របៀបយក Bot Token និង Chat ID (ចំណាយពេល 1 នាទី)៖</div>
+                        <ol class="list-decimal list-inside space-y-1 text-slate-300">
+                            <li data-i18n="tgStep1">បើក Telegram ស្វែងរក <strong>@BotFather</strong> ➔ វាយ <code>/newbot</code> ➔ ដាក់ឈ្មោះ Bot រួចចម្លង <strong>HTTP API Token</strong>។</li>
+                            <li data-i18n="tgStep2">ចុច Start Bot ថ្មីរបស់អ្នកជាមុនសិន (សំខាន់!) បន្ទាប់មកស្វែងរក <strong>@userinfobot</strong> ដើម្បីយកលេខ <strong>Id (Chat ID)</strong> របស់អ្នក។</li>
+                        </ol>
+                    </div>
+
+                    <!-- Form Inputs -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Telegram Bot Token:</label>
+                            <input type="password" id="tgBotToken" placeholder="ឧទាហរណ៍៖ 7123456789:AAHxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full rounded-xl bg-slate-950 border border-slate-700 focus:border-sky-500 px-3.5 py-2.5 text-xs sm:text-sm text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Telegram Chat ID:</label>
+                            <input type="text" id="tgChatId" placeholder="ឧទាហរណ៍៖ 123456789" class="w-full rounded-xl bg-slate-950 border border-slate-700 focus:border-sky-500 px-3.5 py-2.5 text-xs sm:text-sm text-white outline-none">
+                        </div>
+
+                        <div class="flex flex-wrap gap-2.5 pt-1">
+                            <button onclick="saveTelegramConfig()" class="flex-1 py-2.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="save" class="w-4 h-4"></i>
+                                <span data-i18n="btnSaveTg">រក្សាទុកការកំណត់</span>
+                            </button>
+                            <button onclick="testTelegramAlert()" class="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-sky-500/40 text-sky-300 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                                <span data-i18n="btnTestTg">សាកល្បងផ្ញើ Alert ឥឡូវ!</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Browser Active Auto-Monitor Toggle -->
+                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                                    <span id="monitorPulseDot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                                    <span data-i18n="browserMonitorTitle">ប្រព័ន្ធតាមដានស្វ័យប្រវត្តិ (ពេលបើក Tab នេះ)</span>
+                                </h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5" data-i18n="browserMonitorSub">
+                                    ពិនិត្យម៉ោងទីផ្សារសកម្ម និងដាស់តឿនព័ត៌មានមាសចូល Telegram រៀងរាល់ 15 នាទីម្តង។
+                                </p>
+                            </div>
+                            <button id="btnToggleMonitor" onclick="toggleBrowserMonitor()" class="px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition cursor-pointer">
+                                OFF
+                            </button>
+                        </div>
+                        <div id="monitorLogBox" class="text-[11px] font-mono text-slate-400 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 max-h-24 overflow-y-auto">
+                            > Ready. Configure Telegram Token & Chat ID above.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: True 24/24 Cloud Automation Script (Google Apps Script - FREE) (6 cols) -->
+                <div class="lg:col-span-6 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-2 border-b border-slate-800 pb-3">
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                    FREE 24/7 CLOUD AUTOMATION
+                                </span>
+                                <h3 class="text-base sm:text-lg font-bold text-white mt-1.5" data-i18n="cloudScriptTitle">
+                                    កូដសម្រាប់ Run 24/24 លើ Google Cloud (ឥតគិតថ្លៃ 100%)
+                                </h3>
+                            </div>
+                            <button onclick="copyCloudScript()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shrink-0 transition cursor-pointer">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span data-i18n="btnCopyCode">ចម្លងកូដ (Copy)</span>
+                            </button>
+                        </div>
+
+                        <p class="text-xs text-slate-300 leading-relaxed" data-i18n="cloudScriptExplain">
+                            ដោយសារ Browser លើទូរសព្ទ ឬ កុំព្យូទ័រនឹងឈប់ដើរពេលអ្នកបិទអេក្រង់ ដើម្បីឱ្យវា <strong>ដើរ 24/24 ម៉ោងពិតប្រាកដ</strong> សូមយកកូដខាងក្រោមទៅដាក់ក្នុង <strong>script.google.com</strong> (ឥតគិតថ្លៃរបស់ Google) វានឹងតាមដានព័ត៌មានមាស USD និងផ្ញើ Alert ចូល Telegram អ្នក 24 ម៉ោងលើ 24 ម៉ោង!
+                        </p>
+
+                        <!-- Code Block -->
+                        <pre id="googleAppsScriptCode" class="w-full h-56 overflow-auto rounded-xl bg-slate-950 border border-slate-800 p-3.5 text-[11px] font-mono text-emerald-300 leading-relaxed select-all">// ==========================================================
+// XAU/USD 24/24 GOLD NEWS & SESSION TELEGRAM MONITOR (FREE)
+// Run on: https://script.google.com (Triggers -> Every 15 mins)
+// ==========================================================
+const TELEGRAM_TOKEN = "YOUR_BOT_TOKEN_HERE";
+const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
+
+function checkGoldMarket247() {
+  const props = PropertiesService.getScriptProperties();
+  const now = new Date();
+  const khHour = Number(Utilities.formatDate(now, "Asia/Phnom_Penh", "HH"));
+  const khMin = Number(Utilities.formatDate(now, "Asia/Phnom_Penh", "mm"));
+
+  // 1. Alert before London (14:45) & New York (19:45) Gold Sessions
+  if ((khHour === 14 || khHour === 19) && khMin < 15) {
+    const sessionName = khHour === 14 ? "London Session (3:00 PM)" : "New York Peak Session (8:00 PM)";
+    sendTgMessage(`🔔 <b>ម៉ោងទីផ្សារមាសសកម្មជិតចាប់ផ្តើម!</b>\n⏰ ម៉ោងកម្ពុជា៖ ${khHour}:${khMin < 10 ? '0'+khMin : khMin}\n🔥 វគ្គ៖ <b>${sessionName}</b>\n💡 សូមពិនិត្យក្រាហ្វ H1/M15 និងកំណត់ Stop Loss ជានិច្ច!`);
+  }
+
+  // 2. Fetch ForexFactory Weekly Calendar JSON (Free Public Feed)
+  try {
+    const url = "https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+    const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (res.getResponseCode() === 200) {
+      const events = JSON.parse(res.getContentText());
+      events.forEach(ev => {
+        if (ev.country === "USD" && ev.impact === "High") {
+          const evTime = new Date(ev.date).getTime();
+          const diffMins = Math.round((evTime - now.getTime()) / 60000);
+          const alertKey = "ALERTED_" + ev.title + "_" + ev.date;
+
+          // Alert 30 mins before Red USD News
+          if (diffMins > 0 && diffMins <= 30 && !props.getProperty(alertKey)) {
+            sendTgMessage(`🚨 <b>ប្រកាសអាសន្នព័ត៌មានមាស (USD High Impact)!</b>\n📰 ព័ត៌មាន៖ <b>${ev.title}</b>\n⏳ នៅសល់៖ <b>${diffMins} នាទីទៀត</b>\n📊 ព្យាករណ៍៖ ${ev.forecast || 'N/A'} | មុន៖ ${ev.previous || 'N/A'}\n🛡️ <i>ទុន $10 សូមផ្អាកចូល Order ឬ បិទ Order សិន ដើម្បីការពារការលោតតម្លៃខ្លាំង!</i>`);
+            props.setProperty(alertKey, "1");
+          }
+        }
+      });
+    }
+  } catch (e) {
+    Logger.log("Calendar check error: " + e);
+  }
+}
+
+function sendTgMessage(text) {
+  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  UrlFetchApp.fetch(url, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify({
+      chat_id: TELEGRAM_CHAT_ID,
+      text: text,
+      parse_mode: "HTML"
+    })
+  });
+}</pre>
+                    </div>
+
+                    <!-- 4 Quick Steps to Deploy -->
+                    <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 space-y-1">
+                        <div class="font-bold text-amber-400" data-i18n="deployStepsTitle">របៀបដំឡើងឱ្យដើរ 24/24 (4 ជំហានងាយៗ)៖</div>
+                        <p class="leading-relaxed" data-i18n="deployStepsDesc">
+                            1. ចូល <strong>script.google.com</strong> ➔ ចុច <strong>New Project</strong> ➔ លុបកូដចាស់ចោល រួច Paste កូដខាងលើចូល។<br>
+                            2. ជំនួស <code>YOUR_BOT_TOKEN_HERE</code> និង <code>YOUR_CHAT_ID_HERE</code> ដោយលេខរបស់អ្នក រួចចុច Save (Ctrl+S)។<br>
+                            3. ចុចរូបនាឡិកា <strong>Triggers</strong> (ខាងឆ្វេង) ➔ ចុច <strong>+ Add Trigger</strong> ➔ ជ្រើសរើស <code>Time-driven</code> ➔ <code>Minutes timer</code> ➔ <code>Every 15 minutes</code> ➔ Save ជាការស្រេច!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SECTION 3: PRE-TRADE CHECKLIST & BUY/SELL/WAIT EVALUATOR  -->
+        <!-- ========================================================= -->
+        <section id="section-signal" class="hidden space-y-6">
+<!-- ... existing code ... -->
+                    <!-- Quick Rule Reminder Box -->
+                    <div class="mt-6 pt-4 border-t border-slate-800/80">
+                        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 flex items-start gap-2.5">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                            <span data-i18n="goldenRule">
+                                <strong>ច្បាប់មាស៖</strong> បើទិសដៅធំ (H1/H4) កំពុង <strong>ឡើង (Uptrend)</strong> សូមរង់ចាំតម្លៃធ្លាក់មកប៉ះ Support រួចចាំ <strong>Buy</strong>។ កុំព្យាយាម Sell បញ្ច្រាសទិសដៅធំ!
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- SECTION 4: $10 MICRO-ACCOUNT RISK & LOT CALCULATOR        -->
+        <!-- ========================================================= -->
+        <section id="section-risk" class="hidden space-y-6">
+        </section>
+    </main>
+
+    <!-- Toast Notification Banner -->
+    <div id="toastBox" class="hidden fixed bottom-5 right-5 z-50 max-w-sm rounded-xl bg-slate-900 border border-amber-500/50 px-4 py-3 text-xs sm:text-sm text-white shadow-2xl flex items-center gap-2.5">
+        <i data-lucide="bell" class="w-4 h-4 text-amber-400 shrink-0"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. INTERNATIONALIZATION (KHMER / ENGLISH)
+        // ==========================================
+        let currentLang = 'km';
+        let currentTvInterval = '15';
+
+        const i18n = {
+            km: {
+                appTitle: "ជំនួយការ Trade មាស AI 24/24",
+                appSubtitle: "ក្រាហ្វពិត + AI វិភាគ + Telegram Alert • ទុន $10 (Exness/MT5)",
+                tgHeaderOff: "Telegram: មិនទាន់ភ្ជាប់",
+                tgHeaderOn: "Telegram: បានភ្ជាប់ ✓",
+                khTimeLabel: "ម៉ោងកម្ពុជា:",
+                safetyDesc: "<strong>ការពារទុន $10 របស់អ្នក៖</strong> លើ Exness សូមប្រើគណនី <strong>Standard Cent (USC)</strong> ($10 = 1,000 USC) ហើយដាក់ <strong>Stop Loss (SL)</strong> គ្រប់ Order ជានិច្ច។ ប្រើក្រាហ្វពិត និង AI ខាងក្រោមដើម្បីវិភាគមុនចូលទិញ/លក់។",
+                tabLive: "១. ក្រាហ្វពិត & AI វិភាគ",
+                tabTelegram: "២. Telegram Alert 24/24",
+                tabSignal: "៣. ពិនិត្យលក្ខខណ្ឌ Buy/Sell",
+                tabRisk: "៤. គណនា Lot ($10)",
+                liveChartTitle: "ក្រាហ្វតម្លៃមាសពិតៗ (XAU/USD Live)",
+                liveChartSub: "ទិន្នន័យតម្លៃទីផ្សារផ្ទាល់ • ប្តូរ Timeframe ដើម្បីមើលទិសដៅ",
+                btnQuickAutoChart: "Auto វិភាគភ្លាម",
+                chartCaptureTip: "<strong>គន្លឹះថ្មី៖</strong> ប្រើមុខងារ <strong>Auto វិភាគ (គ្មាន Snapshot)</strong> ខាងស្តាំដើម្បីឱ្យ AI វិភាគតម្លៃ និងព័ត៌មានដោយស្វ័យប្រវត្តិ និងប្រាប់ពេល <strong>BUY / SELL / CLOSE</strong>!",
+                aiMentorTitle: "ជំនួយការ AI វិភាគផ្ទាល់",
+                modeAutoBtn: "⚡ Auto (គ្មានរូប)",
+                modeChartBtn: "📊 រូបក្រាហ្វ",
+                modeNewsBtn: "📰 ព័ត៌មាន",
+                autoModeBadge: "⚡ វិភាគស្វ័យប្រវត្តិ (មិនបាច់ថតរូប Snapshot)",
+                autoModeDesc: "ប្រព័ន្ធទាញទិន្នន័យតម្លៃមាស និងព័ត៌មានសេដ្ឋកិច្ចផ្ទាល់ ដើម្បីគណនា <strong>BUY / SELL / CLOSE POSITION</strong> និងផ្ញើ Alert ចូល Telegram រាល់ពេលការណែនាំផ្លាស់ប្តូរ!",
+                lblLivePriceInput: "តម្លៃមាសបច្ចុប្បន្ន",
+                lblOpenPosType: "Order កំពុងបើក",
+                posNone: "គ្មាន Order បើកទេ",
+                lblOpenEntryPrice: "តម្លៃចូល Order",
+                btnRunAutoNow: "គណនា BUY/SELL/CLOSE ឥឡូវ",
+                btnStartAutoWatch: "បើក Auto-Watch + TG Alert",
+                btnStopAutoWatch: "បិទ Auto-Watch",
+                autoChangeAlertNote: "* ពេលបើក <strong>Auto-Watch</strong> ប្រព័ន្ធនឹងពិនិត្យតម្លៃ និងព័ត៌មានរៀងរាល់ 2 នាទីម្តង ហើយ <strong>ផ្ញើ Alert ចូល Telegram ភ្លាម</strong> រាល់ពេលការណែនាំផ្លាស់ប្តូរ (ឧទាហរណ៍៖ ពី WAIT ទៅ BUY, ឬ ប្រាប់ឱ្យ CLOSE Order)។",
+                selectChartTf: "ជ្រើស Timeframe នៃរូបភាពក្រាហ្វ៖",
+                uploadTitle: "ចុចជ្រើសរើសរូបក្រាហ្វ MT5 ឬ ចុច Ctrl+V (Paste)",
+                uploadSub: "AI នឹងមើលខ្សែក្រាហ្វ Support/Resistance និងប្រាប់ចំណុច Buy / Sell ជូនអ្នក",
+                imgReadyText: "រូបភាពក្រាហ្វរួចរាល់សម្រាប់ AI វិភាគ!",
+                btnRemoveImg: "លុបរូប",
+                btnRunChartAi: "ឱ្យ AI វិភាគក្រាហ្វនេះឥឡូវ!",
+                extraNoteLabel: "សំណួរបន្ថែម (ស្រេចចិត្ត):",
+                liveNewsFeedTitle: "ព័ត៌មានសេដ្ឋកិច្ច USD / មាស ផ្ទាល់",
+                btnRefreshNews: "ទាញព័ត៌មាន",
+                liveNewsHint: "ចុច <strong>ទាញព័ត៌មាន</strong> ដើម្បីមើលព័ត៌មានសេដ្ឋកិច្ច USD/មាស ចុងក្រោយ ឬ ចុចលើព័ត៌មានណាមួយដើម្បីយកមកវិភាគភ្លាម!",
+                sampleLabel: "គំរូ៖",
+                pasteBoxLabel: "Copy ពី ForexFactory / Investing ឬ ព័ត៌មានផ្សេងៗមក Paste ទីនេះ៖",
+                btnPasteNews: "Paste ភ្លាម",
+                btnNewsToTg: "វិភាគ + TG",
+                btnAnalyze: "វិភាគព័ត៌មានជាមួយ AI",
+                btnClear: "សម្អាត",
+                aiLoadingText: "AI កំពុងវិភាគទិន្នន័យ និងគណនា BUY / SELL / CLOSE...",
+                aiSignalTag: "ការណែនាំរបស់ AI (XAU/USD):",
+                lblEntry: "ចំណុចចូល / បិទ",
+                lblCalcMetric: "គណនា Pips / Lot",
+                summaryHeading: "📌 ការវិភាគលម្អិត៖",
+                adviceHeading: "🛡️ ដំបូន្មានសម្រាប់ទុន $10:",
+                btnForwardTg: "ផ្ញើលទ្ធផលវិភាគនេះចូល Telegram របស់ខ្ញុំ",
+                tgSetupTitle: "ភ្ជាប់ Telegram Bot ដើម្បីទទួល Alert",
+                tgSetupSub: "បញ្ចូល Bot Token និង Chat ID របស់អ្នក ដើម្បីឱ្យប្រព័ន្ធផ្ញើសារដាស់តឿនពេលមានព័ត៌មានមាសប្រែប្រួល ឬ លទ្ធផលវិភាគ AI ចូលទូរសព្ទអ្នកផ្ទាល់។",
+                tgHowToTitle: "របៀបយក Bot Token និង Chat ID (ចំណាយពេល 1 នាទី)៖",
+                tgStep1: "បើក Telegram ស្វែងរក <strong>@BotFather</strong> ➔ វាយ <code>/newbot</code> ➔ ដាក់ឈ្មោះ Bot រួចចម្លង <strong>HTTP API Token</strong>។",
+                tgStep2: "ចុច Start Bot ថ្មីរបស់អ្នកជាមុនសិន (សំខាន់!) បន្ទាប់មកស្វែងរក <strong>@userinfobot</strong> ដើម្បីយកលេខ <strong>Id (Chat ID)</strong> របស់អ្នក។",
+                btnSaveTg: "រក្សាទុកការកំណត់",
+                btnTestTg: "សាកល្បងផ្ញើ Alert ឥឡូវ!",
+                browserMonitorTitle: "ប្រព័ន្ធតាមដានស្វ័យប្រវត្តិ (ពេលបើក Tab នេះ)",
+                browserMonitorSub: "ពិនិត្យម៉ោងទីផ្សារសកម្ម និងដាស់តឿនព័ត៌មានមាសចូល Telegram រៀងរាល់ 15 នាទីម្តង។",
+                cloudScriptTitle: "កូដសម្រាប់ Run 24/24 លើ Google Cloud (ឥតគិតថ្លៃ 100%)",
+                btnCopyCode: "ចម្លងកូដ (Copy)",
+                cloudScriptExplain: "ដោយសារ Browser លើទូរសព្ទ ឬ កុំព្យូទ័រនឹងឈប់ដើរពេលអ្នកបិទអេក្រង់ ដើម្បីឱ្យវា <strong>ដើរ 24/24 ម៉ោងពិតប្រាកដ</strong> សូមយកកូដខាងក្រោមទៅដាក់ក្នុង <strong>script.google.com</strong> (ឥតគិតថ្លៃរបស់ Google) វានឹងតាមដានព័ត៌មានមាស USD និងផ្ញើ Alert ចូល Telegram អ្នក 24 ម៉ោងលើ 24 ម៉ោង!",
+                deployStepsTitle: "របៀបដំឡើងឱ្យដើរ 24/24 (4 ជំហានងាយៗ)៖",
+                deployStepsDesc: "1. ចូល <strong>script.google.com</strong> ➔ ចុច <strong>New Project</strong> ➔ លុបកូដចាស់ចោល រួច Paste កូដខាងលើចូល។<br>2. ជំនួស <code>YOUR_BOT_TOKEN_HERE</code> និង <code>YOUR_CHAT_ID_HERE</code> ដោយលេខរបស់អ្នក រួចចុច Save (Ctrl+S)។<br>3. ចុចរូបនាឡិកា <strong>Triggers</strong> (ខាងឆ្វេង) ➔ ចុច <strong>+ Add Trigger</strong> ➔ ជ្រើសរើស <code>Time-driven</code> ➔ <code>Minutes timer</code> ➔ <code>Every 15 minutes</code> ➔ Save ជាការស្រេច!",
+                checklistTitle: "ពិនិត្យខ្សែក្រាហ្វលើ MT5 មុនចូល Order",
+                checklistSub: "ជ្រើសរើសអ្វីដែលអ្នកកំពុងឃើញលើក្រាហ្វ MT5 របស់អ្នក៖",
+                btnReset: "កំណត់ឡើងវិញ",
+                q1Label: "១. តើទិសដៅក្រាហ្វធំ (H4 ឬ H1) កំពុងទៅណា?",
+                q1OptUp: "ឡើង (Uptrend)",
+                q1OptUpDesc: "កំពូល & បាតខ្ពស់ជាងមុន",
+                q1OptDown: "ចុះ (Downtrend)",
+                q1OptDownDesc: "កំពូល & បាតទាបជាងមុន",
+                q1OptSide: "ដើរទទឹង (Sideways)",
+                q1OptSideDesc: "ឡើងចុះក្នុងប្រអប់ដដែល",
+                q2Label: "២. តើតម្លៃបច្ចុប្បន្នកំពុងស្ថិតនៅតំបន់ណា?",
+                q2OptSup: "តំបន់ទ្រទ្រង់ (Support)",
+                q2OptSupDesc: "តម្លៃធ្លាក់មកប៉ះបាតក្រោម",
+                q2OptRes: "តំបន់របាំងលើ (Resistance)",
+                q2OptResDesc: "តម្លៃឡើងមកប៉ះពិដានលើ",
+                q2OptMid: "នៅកណ្តាលទីវាល",
+                q2OptMidDesc: "មិនទាន់ប៉ះតំបន់សំខាន់ទេ",
+                q3Label: "៣. តើមានទៀនបញ្ជាក់ (Candlestick លើ M15) ហើយឬនៅ?",
+                q3OptBull: "ទៀនបៃតងរុញឡើង",
+                q3OptBullDesc: "Bullish Engulfing / ជើងវែងក្រោម",
+                q3OptBear: "ទៀនក្រហមសង្កត់ចុះ",
+                q3OptBearDesc: "Bearish Engulfing / ជើងវែងលើ",
+                q3OptNone: "មិនទាន់មានសញ្ញា",
+                q3OptNoneDesc: "ទៀនកំពុងរត់មិនទាន់បិទ",
+                q4Label: "៤. តើមានព័ត៌មានសេដ្ឋកិច្ចធំៗ (ពណ៌ក្រហម USD) ជិតចេញទេ?",
+                q4OptSafe: "ទីផ្សារស្ងប់ស្ងាត់ (គ្មានព័ត៌មានក្រហម)",
+                q4OptSafeDesc: "គ្មានព័ត៌មានធំក្នុងរយៈពេល 1 ម៉ោងនេះ",
+                q4OptDanger: "មានព័ត៌មានក្រហម (CPI / NFP / Fed)",
+                q4OptDangerDesc: "ជិតចេញក្នុង 30 នាទី ឬ ទើបចេញថ្មីៗ",
+                q5Label: "៥. តើពេលនេះម៉ោងប៉ុន្មាននៅកម្ពុជា?",
+                q5OptAsia: "ម៉ោងអាស៊ី (6AM - 2PM)",
+                q5OptAsiaDesc: "ទីផ្សារដើរយឺត ឬ ទទឹង",
+                q5OptLon: "ម៉ោងឡុងដ៍ (3PM - 7PM)",
+                q5OptLonDesc: "ចាប់ផ្តើមមានចលនាល្អ",
+                q5OptNY: "ម៉ោងអាមេរិក (8PM - 12AM)",
+                q5OptNYDesc: "មាសរត់ខ្លាំង និងច្បាស់បំផុត",
+                verdictHeader: "លទ្ធផលវិភាគរបស់ជំនួយការ",
+                verdictDefaultTitle: "សូមជ្រើសរើសលក្ខខណ្ឌខាងឆ្វេង",
+                verdictDefaultSub: "ឆ្លើយសំណួរទាំង 5 ដើម្បីឱ្យប្រព័ន្ធប្រាប់ថាគួរ Buy, Sell ឬ ឈប់រង់ចាំ។",
+                verdictReasonsTitle: "មូលហេតុ និងការណែនាំលម្អិត៖",
+                verdictTipInitial: "កុំប្រញាប់ចូល Order បើមិនទាន់ឃើញទៀនបញ្ជាក់ច្បាស់លាស់។ ការរង់ចាំក៏ជាយុទ្ធសាស្ត្រមួយដែរ!",
+                goldenRule: "<strong>ច្បាប់មាស៖</strong> បើទិសដៅធំ (H1/H4) កំពុង <strong>ឡើង (Uptrend)</strong> សូមរង់ចាំតម្លៃធ្លាក់មកប៉ះ Support រួចចាំ <strong>Buy</strong>។ កុំព្យាយាម Sell បញ្ច្រាសទិសដៅធំ!",
+                calcTitle: "ម៉ាស៊ីនគណនា Lot & ហានិភ័យ ($10 Capital)",
+                calcSub: "ការពារគណនី $10 របស់អ្នកកុំឱ្យដាច់ទុនលឿន ដោយកំណត់ទំហំ Lot និង Stop Loss ឱ្យបានត្រឹមត្រូវ។",
+                accTypeLabel: "ប្រភេទគណនី Exness របស់អ្នក៖",
+                recommendedTag: "ណែនាំ",
+                highRiskTag: "ប្រថុយខ្ពស់",
+                centDesc: "$10 = 1,000 USC (សុវត្ថិភាពខ្ពស់សម្រាប់ទុនតូច)",
+                stdDesc: "$10 ពិតៗ (0.01 Lot ខាតលឿនណាស់)",
+                balanceLabel: "ដើមទុន (USD $)",
+                riskPercentLabel: "ហានិភ័យក្នុង 1 Order (%)",
+                slPipsLabel: "ចម្ងាយ Stop Loss (Pips)",
+                pipsNote: "*សម្គាល់លើមាស (XAU/USD): 30 Pips = 300 Points លើ MT5 (ឧទាហរណ៍៖ ទិញនៅ 2650.00 ដាក់ SL នៅ 2647.00)។",
+                calcResultTitle: "ទំហំ Lot ដែលអ្នកគួរប្រើលើ MT5",
+                recLotLabel: "ទំហំ Lot ណែនាំ (MT5):",
+                maxLossLabel: "ទឹកប្រាក់ខាតអតិបរមា (បើប៉ះ SL):",
+                survivalLabel: "ចំនួនដងដែលអាចខាតជាប់គ្នាមុនអស់ទុន៖",
+                exnessGuideTitle: "របៀបបើកគណនី $10 លើ Exness ឱ្យត្រូវ៖",
+                exnessGuideDesc: "ចូល App Exness ➔ ចុច <strong>Open New Account</strong> ➔ ជ្រើសរើស <strong>Standard Cent</strong> ➔ ជ្រើស Platform <strong>MT5</strong> ➔ រូបិយប័ណ្ណ <strong>USC</strong> ➔ ដាក់លុយ $10 អ្នកនឹងឃើញលុយ <strong>1,000 USC</strong> ក្នុង MT5 ហើយស្វែងរកឈ្មោះមាស <strong>XAUUSDc</strong> ដើម្បី Trade។",
+                footerText: "បង្កើតឡើងសម្រាប់ជាជំនួយការសិក្សា និងគ្រប់គ្រងហានិភ័យ XAU/USD • សូមហ្វឹកហាត់លើ Demo ឬ Cent Account ជាមុនសិន។"
+            },
+            en: {
+                appTitle: "24/7 AI Gold Trading Assistant",
+                appSubtitle: "Live Chart + AI Vision + Telegram Alerts • $10 Capital (Exness/MT5)",
+                tgHeaderOff: "Telegram: Not Connected",
+                tgHeaderOn: "Telegram: Connected ✓",
+                khTimeLabel: "Cambodia Time:",
+                safetyDesc: "<strong>Protect Your $10 Capital:</strong> On Exness, ALWAYS open a <strong>Standard Cent (USC)</strong> account ($10 = 1,000 USC) and ALWAYS place a <strong>Stop Loss (SL)</strong>. Use the live chart & AI below before entering any trade.",
+                tabLive: "1. Live Chart & AI Vision",
+                tabTelegram: "2. 24/24 Telegram Alert",
+                tabSignal: "3. Buy/Sell Checklist",
+                tabRisk: "4. $10 Lot Calculator",
+                liveChartTitle: "Real-Time Gold Chart (XAU/USD Live)",
+                liveChartSub: "Live market candles • Switch timeframes to inspect trend",
+                btnQuickAutoChart: "Auto Analyze Now",
+                chartCaptureTip: "<strong>New:</strong> Use <strong>Auto (No Snapshot)</strong> on the right to automatically analyze live Gold price & news, calculate <strong>BUY / SELL / CLOSE</strong>, and alert Telegram on changes!",
+                aiMentorTitle: "Instant AI Chart & News Mentor",
+                modeAutoBtn: "⚡ Auto (No Pic)",
+                modeChartBtn: "📊 Chart Pic",
+                modeNewsBtn: "📰 News",
+                autoModeBadge: "⚡ Zero-Snapshot Auto Analyzer & Position Manager",
+                autoModeDesc: "Automatically uses live Gold market context & news to compute <strong>BUY / SELL / CLOSE POSITION</strong> and sends instant Telegram alerts whenever the signal changes!",
+                lblLivePriceInput: "Current Gold Price",
+                lblOpenPosType: "Open Position",
+                posNone: "No Open Order",
+                lblOpenEntryPrice: "Entry Price",
+                btnRunAutoNow: "Compute BUY/SELL/CLOSE Now",
+                btnStartAutoWatch: "Start Auto-Watch + TG Alert",
+                btnStopAutoWatch: "Stop Auto-Watch",
+                autoChangeAlertNote: "* When <strong>Auto-Watch</strong> is active, it re-evaluates every 2 minutes and <strong>alerts Telegram immediately</strong> whenever the action changes (e.g., WAIT ➔ BUY, or CLOSE POSITION).",
+                selectChartTf: "Select Chart Timeframe:",
+                uploadTitle: "Click to upload MT5 chart or press Ctrl+V (Paste)",
+                uploadSub: "AI will inspect Support/Resistance, candles & give a clear Buy/Sell/Wait plan",
+                imgReadyText: "Chart screenshot ready for AI analysis!",
+                btnRemoveImg: "Remove",
+                btnRunChartAi: "Analyze This Chart with AI Now!",
+                extraNoteLabel: "Extra Question (Optional):",
+                liveNewsFeedTitle: "Live USD / Gold Economic News",
+                btnRefreshNews: "Fetch News",
+                liveNewsHint: "Click <strong>Fetch News</strong> to view recent USD/Gold market news, or click any headline to analyze immediately!",
+                sampleLabel: "Samples:",
+                pasteBoxLabel: "Copy from ForexFactory / Investing or any news & Paste here:",
+                btnPasteNews: "Quick Paste",
+                btnNewsToTg: "Analyze + TG",
+                btnAnalyze: "Analyze News with AI",
+                btnClear: "Clear",
+                aiLoadingText: "AI is analyzing live market data & computing BUY / SELL / CLOSE...",
+                aiSignalTag: "AI Recommendation (XAU/USD):",
+                lblEntry: "Entry / Close Zone",
+                lblCalcMetric: "Calc Pips / Lot",
+                summaryHeading: "📌 Detailed Breakdown:",
+                adviceHeading: "🛡️ $10 Account Advice:",
+                btnForwardTg: "Send This Analysis to My Telegram",
+                tgSetupTitle: "Connect Telegram Bot for Instant Alerts",
+                tgSetupSub: "Enter your Bot Token & Chat ID so the assistant can send Gold volatility alerts and AI signals directly to your phone.",
+                tgHowToTitle: "How to get Bot Token & Chat ID (Takes 1 minute):",
+                tgStep1: "Open Telegram, search <strong>@BotFather</strong> ➔ send <code>/newbot</code> ➔ name it and copy the <strong>HTTP API Token</strong>.",
+                tgStep2: "Tap Start on your new bot first (important!), then search <strong>@userinfobot</strong> to copy your numeric <strong>Id (Chat ID)</strong>.",
+                btnSaveTg: "Save Settings",
+                btnTestTg: "Test Send Alert Now!",
+                browserMonitorTitle: "Active Browser Auto-Monitor (While Tab is Open)",
+                browserMonitorSub: "Checks active Gold sessions & high-impact alerts every 15 minutes and sends to Telegram.",
+                cloudScriptTitle: "Free 24/7 Cloud Automation Script (Google Apps Script)",
+                btnCopyCode: "Copy Code",
+                cloudScriptExplain: "Because a browser tab pauses when you lock your phone or close your PC, paste this script into <strong>script.google.com</strong> (100% Free by Google) to monitor Gold USD news & sessions <strong>24/7 in the cloud</strong>!",
+                deployStepsTitle: "How to deploy 24/7 in 4 easy steps:",
+                deployStepsDesc: "1. Go to <strong>script.google.com</strong> ➔ Click <strong>New Project</strong> ➔ Replace existing code with the script above.<br>2. Replace <code>YOUR_BOT_TOKEN_HERE</code> and <code>YOUR_CHAT_ID_HERE</code> with your credentials and Save (Ctrl+S).<br>3. Click the clock icon <strong>Triggers</strong> (left menu) ➔ <strong>+ Add Trigger</strong> ➔ Select <code>Time-driven</code> ➔ <code>Minutes timer</code> ➔ <code>Every 15 minutes</code> ➔ Save!",
+                checklistTitle: "MT5 Chart Pre-Trade Checklist",
+                checklistSub: "Select what you currently see on your MT5 Gold chart:",
+                btnReset: "Reset",
+                q1Label: "1. What is the Higher Timeframe Trend (H4 or H1)?",
+                q1OptUp: "Uptrend",
+                q1OptUpDesc: "Higher Highs & Higher Lows",
+                q1OptDown: "Downtrend",
+                q1OptDownDesc: "Lower Highs & Lower Lows",
+                q1OptSide: "Sideways / Range",
+                q1OptSideDesc: "Bouncing inside a flat box",
+                q2Label: "2. Where is the current price located?",
+                q2OptSup: "At Support / Demand",
+                q2OptSupDesc: "Price pulled back to a floor",
+                q2OptRes: "At Resistance / Supply",
+                q2OptResDesc: "Price rallied into a ceiling",
+                q2OptMid: "Middle of Nowhere",
+                q2OptMidDesc: "Far from any key level",
+                q3Label: "3. Is there a Candlestick Confirmation (on M15)?",
+                q3OptBull: "Bullish Rejection / Engulfing",
+                q3OptBullDesc: "Strong green candle / bottom wick",
+                q3OptBear: "Bearish Rejection / Engulfing",
+                q3OptBearDesc: "Strong red candle / top wick",
+                q3OptNone: "No Confirmation Yet",
+                q3OptNoneDesc: "Candle still moving / indecisive",
+                q4Label: "4. Is High-Impact USD Red News coming soon?",
+                q4OptSafe: "Quiet Market (No Red News)",
+                q4OptSafeDesc: "No major USD news within 1 hour",
+                q4OptDanger: "Red News Alert (CPI / NFP / Fed)",
+                q4OptDangerDesc: "Within 30 mins or just released",
+                q5Label: "5. What is the current session in Cambodia?",
+                q5OptAsia: "Asian Session (6AM - 2PM)",
+                q5OptAsiaDesc: "Slow or choppy movement",
+                q5OptLon: "London Session (3PM - 7PM)",
+                q5OptLonDesc: "Volume & trend picking up",
+                q5OptNY: "New York Session (8PM - 12AM)",
+                q5OptNYDesc: "Peak Gold volatility & clarity",
+                verdictHeader: "Assistant Evaluation Verdict",
+                verdictDefaultTitle: "Complete the Checklist",
+                verdictDefaultSub: "Answer all 5 chart questions to see whether to Buy, Sell, or Wait.",
+                verdictReasonsTitle: "Detailed Reasons & Guidance:",
+                verdictTipInitial: "Never rush into an order without clear candle confirmation. Waiting on the sidelines is a winning skill!",
+                goldenRule: "<strong>Golden Rule:</strong> When H1/H4 is in an <strong>Uptrend</strong>, wait for price to pull back to Support and look to <strong>Buy</strong>. Never fight the main trend!",
+                calcTitle: "$10 Micro-Account Risk & Lot Calculator",
+                calcSub: "Protect your $10 balance from blowing up by calculating the exact Lot Size and Stop Loss.",
+                accTypeLabel: "Your Exness Account Type:",
+                recommendedTag: "Recommended",
+                highRiskTag: "High Risk",
+                centDesc: "$10 = 1,000 USC (Safest for learning)",
+                stdDesc: "$10 real USD (0.01 lot risks too much)",
+                balanceLabel: "Balance (USD $)",
+                riskPercentLabel: "Risk per Trade (%)",
+                slPipsLabel: "Stop Loss Distance (Pips)",
+                pipsNote: "*Note for Gold (XAU/USD): 30 Pips = 300 Points on MT5 (e.g., Buy at 2650.00, SL at 2647.00).",
+                calcResultTitle: "Recommended MT5 Lot Size",
+                recLotLabel: "Recommended Lot (MT5):",
+                maxLossLabel: "Max Loss (If SL Hit):",
+                survivalLabel: "Consecutive Losses Before Blowing Account:",
+                exnessGuideTitle: "How to set up your $10 Exness account properly:",
+                exnessGuideDesc: "Open Exness App ➔ Tap <strong>Open New Account</strong> ➔ Select <strong>Standard Cent</strong> ➔ Choose <strong>MT5</strong> ➔ Currency <strong>USC</strong> ➔ Deposit $10 to get <strong>1,000 USC</strong> in MT5, then trade <strong>XAUUSDc</strong>.",
+                footerText: "Built as an educational & risk-management assistant for XAU/USD • Practice on Demo or Cent accounts first."
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            const btnKm = document.getElementById('btnLangKm');
+            const btnEn = document.getElementById('btnLangEn');
+            if (lang === 'km') {
+                btnKm.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-500 text-slate-950 shadow";
+                btnEn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+            } else {
+                btnEn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-500 text-slate-950 shadow";
+                btnKm.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[lang] && i18n[lang][key]) {
+                    el.innerHTML = i18n[lang][key];
+                }
+            });
+
+            updateTelegramHeaderBadge();
+            evaluateChecklist();
+            calculateRisk();
+            updateCambodiaClock();
+            if (lastAiResponseData) {
+                renderUnifiedAiResult(lastAiResponseData);
+            }
+        }
+
+        // ==========================================
+        // 4. AI AUTO (NO-SNAPSHOT), CHART VISION & NEWS ANALYZER (GEMINI)
+        // ==========================================
+        let uploadedChartBase64 = null;
+        let uploadedChartMime = "image/png";
+        let lastAiResponseData = null;
+        let lastEmittedSignalAction = null;
+        let zeroSnapshotWatchTimer = null;
+
+        function switchAiMode(mode) {
+            const autoPanel = document.getElementById('aiModeAutoPanel');
+            const chartPanel = document.getElementById('aiModeChartPanel');
+            const newsPanel = document.getElementById('aiModeNewsPanel');
+            const btnAuto = document.getElementById('btnAiModeAuto');
+            const btnChart = document.getElementById('btnAiModeChart');
+            const btnNews = document.getElementById('btnAiModeNews');
+
+            autoPanel.classList.add('hidden');
+            chartPanel.classList.add('hidden');
+            newsPanel.classList.add('hidden');
+
+            btnAuto.className = "px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer";
+            btnChart.className = "px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer";
+            btnNews.className = "px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer";
+
+            if (mode === 'auto') {
+                autoPanel.classList.remove('hidden');
+                btnAuto.className = "px-2.5 py-1 rounded-lg font-bold bg-emerald-500 text-slate-950 transition cursor-pointer";
+            } else if (mode === 'chart') {
+                chartPanel.classList.remove('hidden');
+                btnChart.className = "px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
+            } else {
+                newsPanel.classList.remove('hidden');
+                btnNews.className = "px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
+            }
+        }
+
+        function computeExactTradeMath(livePrice, action, openPosType, openEntryPrice, slPriceStr) {
+            const accTypeEl = document.querySelector('input[name="accType"]:checked');
+            const isCent = (accTypeEl?.value || 'cent') === 'cent';
+            const balance = Math.max(1, parseFloat(document.getElementById('accountBalance')?.value) || 10);
+            const riskPct = Math.max(0.5, Math.min(20, parseFloat(document.getElementById('riskPercent')?.value) || 5));
+
+            let slDistanceDollars = 3.0; // Default $3.00 = 30 pips on XAU/USD
+            const parsedSl = parseFloat((slPriceStr || '').replace(/[^0-9.]/g, ''));
+            if (!isNaN(parsedSl) && parsedSl > 100 && livePrice > 100) {
+                const diff = Math.abs(livePrice - parsedSl);
+                if (diff >= 0.2 && diff <= 100) {
+                    slDistanceDollars = diff;
+                }
+            }
+
+            const slPips = Math.max(5, Math.round(slDistanceDollars * 10));
+            const maxRiskUsd = (balance * riskPct) / 100;
+            const pipValuePerLot = isCent ? 0.10 : 10.0;
+            const safeLot = Math.max(0.01, Math.floor((maxRiskUsd / (slPips * pipValuePerLot)) * 100) / 100);
+
+            let positionCalcText = `${slPips} pips | ${safeLot.toFixed(2)} ${isCent ? 'USC Lot' : 'Lot'}`;
+
+            if (openPosType && openPosType !== 'NONE' && !isNaN(openEntryPrice) && openEntryPrice > 100) {
+                const diffDollars = openPosType === 'BUY'
+                    ? (livePrice - openEntryPrice)
+                    : (openEntryPrice - livePrice);
+                const diffPips = (diffDollars * 10).toFixed(1);
+                const estUsd = (diffDollars * 10 * pipValuePerLot * safeLot).toFixed(2);
+                positionCalcText = `${diffPips >= 0 ? '+' : ''}${diffPips} pips (${estUsd >= 0 ? '+$' : '-$'}${Math.abs(estUsd)})`;
+            }
+
+            return { slPips, safeLot, positionCalcText, isCent };
+        }
+
+        async function runZeroSnapshotAutoAnalysis(isBackgroundWatch = false) {
+            switchAiMode('auto');
+
+            const livePriceInput = document.getElementById('autoLivePrice');
+            const openPosType = document.getElementById('autoOpenPosType')?.value || 'NONE';
+            const openEntryRaw = parseFloat(document.getElementById('autoOpenEntry')?.value);
+            const livePrice = Math.max(100, parseFloat(livePriceInput?.value) || 3615.20);
+
+            const loading = document.getElementById('aiLoadingBox');
+            const resultBox = document.getElementById('aiUnifiedResult');
+            const btnNow = document.getElementById('btnRunAutoNow');
+
+            if (!isBackgroundWatch) {
+                btnNow.disabled = true;
+                btnNow.classList.add('opacity-60');
+                resultBox.classList.add('hidden');
+                loading.classList.remove('hidden');
+            }
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const khTime = new Date(utc + (3600000 * 7));
+            const khTimeStr = khTime.toISOString().replace('T', ' ').substring(0, 19) + ' (UTC+7 Cambodia)';
+
+            const systemInstruction = `You are an automated real-time XAU/USD (Gold) trading assistant with Google Search grounding for a beginner trader in Cambodia with a $10 Standard Cent account on Exness/MT5.
+1. Search for the latest XAU/USD spot gold price, key support/resistance levels, and today's US economic news/calendar impact.
+2. Combine the real-time market/news context with the user's reference price (${livePrice}) and open position status (${openPosType}${!isNaN(openEntryRaw) ? ' entered at ' + openEntryRaw : ''}).
+3. Decide strictly among: "BUY", "SELL", "CLOSE", or "WAIT".
+   - Choose "CLOSE" when the user has an open BUY or SELL position and market momentum, resistance/support, or news favors locking profit or cutting risk now.
+   - Choose "WAIT" when volatility/news is dangerous, price is in mid-range, or setup lacks confirmation.
+4. Provide exact numerical levels for entryZone (or target close price), stopLoss, and takeProfit, plus clear Khmer and English explanations.`;
+
+            const userPrompt = `Current Cambodia time: ${khTimeStr}. Active chart timeframe: ${currentTvInterval} mins. Reference Gold price: ${livePrice}. Open position: ${openPosType}${!isNaN(openEntryRaw) ? ', Entry price: ' + openEntryRaw : ''}. Search latest XAU/USD price and US news today and give exact BUY / SELL / CLOSE / WAIT calculation.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            action: { type: "STRING", enum: ["BUY", "SELL", "CLOSE", "WAIT"] },
+                            actionLabelKm: { type: "STRING" },
+                            actionLabelEn: { type: "STRING" },
+                            detectedPrice: { type: "NUMBER" },
+                            entryZone: { type: "STRING" },
+                            stopLoss: { type: "STRING" },
+                            takeProfit: { type: "STRING" },
+                            summaryKm: { type: "STRING" },
+                            summaryEn: { type: "STRING" },
+                            adviceKm: { type: "STRING" },
+                            adviceEn: { type: "STRING" }
+                        },
+                        required: [
+                            "action", "actionLabelKm", "actionLabelEn",
+                            "entryZone", "stopLoss", "takeProfit",
+                            "summaryKm", "summaryEn", "adviceKm", "adviceEn"
+                        ]
+                    }
+                }
+            };
+
+            try {
+                const data = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!rawText) throw new Error("Empty AI auto response");
+                const parsed = JSON.parse(rawText);
+
+                const effectivePrice = (typeof parsed.detectedPrice === 'number' && parsed.detectedPrice > 100)
+                    ? parsed.detectedPrice
+                    : livePrice;
+
+                if (livePriceInput && typeof parsed.detectedPrice === 'number' && parsed.detectedPrice > 100) {
+                    livePriceInput.value = parsed.detectedPrice.toFixed(2);
+                }
+
+                const math = computeExactTradeMath(effectivePrice, parsed.action, openPosType, openEntryRaw, parsed.stopLoss);
+
+                parsed.isChart = true;
+                parsed.isAuto = true;
+                parsed.calcMetricText = math.positionCalcText;
+                lastAiResponseData = parsed;
+                renderUnifiedAiResult(parsed);
+
+                // Alert Telegram automatically whenever the recommendation changes!
+                if (lastEmittedSignalAction !== null && lastEmittedSignalAction !== parsed.action) {
+                    const alertMsg = `🔄 <b>ការផ្លាស់ប្តូរសញ្ញាមាស Auto (XAU/USD)</b>\n⚡ ពី <b>${lastEmittedSignalAction}</b> ➔ ទៅជា <b>${parsed.action} (${parsed.actionLabelKm})</b>\n💵 តម្លៃមាស៖ <code>${effectivePrice.toFixed(2)}</code>\n🎯 Entry/Close: <code>${parsed.entryZone}</code>\n🛑 SL: <code>${parsed.stopLoss}</code> | ✅ TP: <code>${parsed.takeProfit}</code>\n📐 គណនា៖ <code>${math.positionCalcText}</code>\n📌 <b>មូលហេតុ៖</b> ${parsed.summaryKm}`;
+                    await sendTelegramMessage(alertMsg);
+                    showToast(currentLang === 'km'
+                        ? `សញ្ញាផ្លាស់ប្តូរទៅ ${parsed.action} — បានផ្ញើ Alert ចូល Telegram!`
+                        : `Signal changed to ${parsed.action} — Telegram alert sent!`);
+                }
+                lastEmittedSignalAction = parsed.action;
+                appendMonitorLog(`Auto-Analysis [${khTimeStr.split(' ')[1]}]: ${parsed.action} @ ${effectivePrice.toFixed(2)}`);
+            } catch (err) {
+                if (!isBackgroundWatch) {
+                    loading.classList.add('hidden');
+                    showToast(currentLang === 'km'
+                        ? "មានបញ្ហាក្នុងការវិភាគ Auto សូមព្យាយាមម្តងទៀត!"
+                        : "Auto analysis failed. Please try again.");
+                }
+                appendMonitorLog("Auto-Analysis retry/error.");
+            } finally {
+                if (!isBackgroundWatch) {
+                    btnNow.disabled = false;
+                    btnNow.classList.remove('opacity-60');
+                }
+            }
+        }
+
+        function toggleZeroSnapshotAutoWatch() {
+            const label = document.getElementById('btnAutoWatchLabel');
+            const statusLabel = document.getElementById('autoLoopStatusLabel');
+
+            if (zeroSnapshotWatchTimer) {
+                clearInterval(zeroSnapshotWatchTimer);
+                zeroSnapshotWatchTimer = null;
+                if (label) label.textContent = i18n[currentLang].btnStartAutoWatch;
+                if (statusLabel) {
+                    statusLabel.textContent = "Auto Loop: OFF";
+                    statusLabel.className = "text-[10px] px-2 py-0.5 rounded bg-slate-950 text-slate-300 border border-slate-700";
+                }
+                appendMonitorLog("Zero-Snapshot Auto-Watch stopped.");
+                showToast(currentLang === 'km' ? "បានបិទ Auto-Watch" : "Auto-Watch stopped");
+            } else {
+                const token = localStorage.getItem('xau_tg_token');
+                const chatId = localStorage.getItem('xau_tg_chat_id');
+                if (!token || !chatId) {
+                    showToast(currentLang === 'km'
+                        ? "សូមភ្ជាប់ Telegram Bot Token & Chat ID ជាមុនសិន ដើម្បីទទួល Alert ពេលសញ្ញាផ្លាស់ប្តូរ!"
+                        : "Please save Telegram Token & Chat ID first to receive change alerts!");
+                    switchTab('telegram');
+                    return;
+                }
+
+                if (label) label.textContent = i18n[currentLang].btnStopAutoWatch;
+                if (statusLabel) {
+                    statusLabel.textContent = "Auto Loop: ON (2m)";
+                    statusLabel.className = "text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold";
+                }
+                appendMonitorLog("Zero-Snapshot Auto-Watch STARTED (Every 2 mins + Telegram change alert).");
+                showToast(currentLang === 'km'
+                    ? "បានបើក Auto-Watch! នឹងផ្ញើ Alert ចូល Telegram រាល់ពេលសញ្ញាផ្លាស់ប្តូរ។"
+                    : "Auto-Watch started! Will alert Telegram on signal changes.");
+
+                runZeroSnapshotAutoAnalysis(true);
+                zeroSnapshotWatchTimer = setInterval(() => {
+                    runZeroSnapshotAutoAnalysis(true);
+                }, 2 * 60 * 1000);
+            }
+        }
+
+        function changeChartTimeframe(interval, btnEl) {
+            currentTvInterval = interval;
+            document.querySelectorAll('.tf-btn').forEach(b => {
+                b.className = "tf-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition";
+            });
+            btnEl.className = "tf-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition";
+            initTradingViewChart(interval);
+        }
+
+        function initTradingViewChart(interval) {
+            currentTvInterval = interval || currentTvInterval || '15';
+            const container = document.getElementById('tv_chart_container');
+            if (!container) return;
+
+            if (typeof TradingView === 'undefined' || !TradingView.widget) {
+                container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-xs text-slate-400 p-4 text-center">TradingView widget is loading or unavailable. You can still run Auto or AI analysis on the right.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            new TradingView.widget({
+                autosize: true,
+                symbol: "OANDA:XAUUSD",
+                interval: currentTvInterval,
+                timezone: "Asia/Phnom_Penh",
+                theme: "dark",
+                style: "1",
+                locale: currentLang === 'km' ? "en" : "en",
+                toolbar_bg: "#090d16",
+                enable_publishing: false,
+                hide_side_toolbar: false,
+                allow_symbol_change: true,
+                container_id: "tv_chart_container"
+            });
+        }
+
+        // ==========================================
+        // 4. AI CHART VISION & NEWS ANALYZER (GEMINI)
+        // ==========================================
+        function switchAiMode(mode) {
+            const autoPanel = document.getElementById('aiModeAutoPanel');
+            const chartPanel = document.getElementById('aiModeChartPanel');
+            const newsPanel = document.getElementById('aiModeNewsPanel');
+            const btnAuto = document.getElementById('btnAiModeAuto');
+            const btnChart = document.getElementById('btnAiModeChart');
+            const btnNews = document.getElementById('btnAiModeNews');
+
+            if (autoPanel) autoPanel.classList.add('hidden');
+            if (chartPanel) chartPanel.classList.add('hidden');
+            if (newsPanel) newsPanel.classList.add('hidden');
+
+            if (btnAuto) btnAuto.className = "px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer";
+            if (btnChart) btnChart.className = "px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer";
+            if (btnNews) btnNews.className = "px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition cursor-pointer";
+
+            if (mode === 'auto') {
+                if (autoPanel) autoPanel.classList.remove('hidden');
+                if (btnAuto) btnAuto.className = "px-2.5 py-1 rounded-lg font-bold bg-emerald-500 text-slate-950 transition cursor-pointer";
+            } else if (mode === 'chart') {
+                if (chartPanel) chartPanel.classList.remove('hidden');
+                if (btnChart) btnChart.className = "px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
+            } else {
+                if (newsPanel) newsPanel.classList.remove('hidden');
+                if (btnNews) btnNews.className = "px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
+            }
+        }
+
+        function handleChartImageUpload(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            processImageFile(file);
+        }
+
+        function processImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast(currentLang === 'km' ? "សូមជ្រើសរើសឯកសាររូបភាព!" : "Please select a valid image file!");
+                return;
+            }
+            uploadedChartMime = file.type;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const dataUrl = e.target.result;
+                uploadedChartBase64 = dataUrl.split(',')[1];
+                document.getElementById('chartImagePreview').src = dataUrl;
+                document.getElementById('uploadPrompt').classList.add('hidden');
+                document.getElementById('imagePreviewWrapper').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearChartImage(e) {
+            if (e) e.stopPropagation();
+            uploadedChartBase64 = null;
+            document.getElementById('chartImageInput').value = '';
+            document.getElementById('imagePreviewWrapper').classList.add('hidden');
+            document.getElementById('uploadPrompt').classList.remove('hidden');
+        }
+
+        // Support Ctrl+V Paste anywhere on page for chart screenshots
+        window.addEventListener('paste', (e) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const file = items[i].getAsFile();
+                    switchTab('live');
+                    switchAiMode('chart');
+                    processImageFile(file);
+                    showToast(currentLang === 'km' ? "បានបិទភ្ជាប់រូបក្រាហ្វរួចរាល់!" : "Chart screenshot pasted!");
+                    break;
+                }
+            }
+        });
+
+        const sampleNewsData = {
+            cpi_low: "US Consumer Price Index (CPI) YoY dropped to 2.4%, lower than the 2.6% forecast. Core CPI also cooled down, increasing market expectations that the Federal Reserve will cut interest rates next month.",
+            nfp_strong: "US Non-Farm Payrolls (NFP) surged by 254,000 jobs last month, beating expectations of 140,000, while the Unemployment Rate fell to 4.1%. The US Dollar Index rallied sharply.",
+            fed_cut: "Federal Reserve Chair Jerome Powell stated that inflation is moving sustainably toward 2% and signaled a 25 basis point interest rate cut, noting that labor market risks are balanced."
+        };
+
+        function loadSampleNews(key) {
+            document.getElementById('newsInput').value = sampleNewsData[key];
+        }
+
+        async function pasteNewsFromClipboard() {
+            const textarea = document.getElementById('newsInput');
+            if (!textarea) return;
+            try {
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    const clipText = await navigator.clipboard.readText();
+                    if (clipText && clipText.trim()) {
+                        textarea.value = clipText.trim();
+                        showToast(currentLang === 'km'
+                            ? "បាន Paste ព័ត៌មានចូលរួចរាល់! អាចចុចវិភាគភ្លាមបាន។"
+                            : "Pasted news from clipboard!");
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Fallback to focusing textarea so user can press Ctrl+V / Long-press Paste
+            }
+            textarea.focus();
+            showToast(currentLang === 'km'
+                ? "សូមចុច Ctrl+V (ឬចុចឱ្យជាប់លើប្រអប់ដើម្បី Paste) ព័ត៌មានពី ForexFactory / Investing!"
+                : "Press Ctrl+V (or long-press the box) to paste news from ForexFactory / Investing!");
+        }
+
+        function useHeadlineForAnalysis(headlineText) {
+            const textarea = document.getElementById('newsInput');
+            if (!textarea) return;
+            textarea.value = headlineText;
+            analyzeNewsWithGemini();
+        }
+
+        async function fetchLiveGoldNewsFeed() {
+            const listEl = document.getElementById('liveGoldNewsList');
+            const badgeEl = document.getElementById('liveNewsStatusBadge');
+            const btnEl = document.getElementById('btnRefreshNewsFeed');
+            if (!listEl) return;
+
+            if (btnEl) btnEl.disabled = true;
+            if (badgeEl) {
+                badgeEl.textContent = currentLang === 'km' ? "កំពុងទាញ..." : "Fetching...";
+                badgeEl.className = "text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40";
+            }
+            listEl.innerHTML = `<div class="py-3 text-center text-[11px] text-amber-300">${currentLang === 'km' ? "កំពុងស្វែងរកព័ត៌មាន USD & Gold (ForexFactory / Investing)..." : "Searching latest USD & Gold news..."}</div>`;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: "Find the latest 5 US economic calendar events (like CPI, NFP, Fed, GDP, Jobless Claims) and XAU/USD Gold market news headlines from sources like ForexFactory or Investing. Return a JSON array of objects with title, source, impact (High/Medium/Low), and detail."
+                    }]
+                }],
+                tools: [{ "google_search": {} }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                title: { type: "STRING" },
+                                source: { type: "STRING" },
+                                impact: { type: "STRING" },
+                                detail: { type: "STRING" }
+                            },
+                            required: ["title", "source", "impact", "detail"]
+                        }
+                    }
+                }
+            };
+
+            try {
+                const data = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                const items = JSON.parse(rawText || "[]");
+
+                if (!Array.isArray(items) || items.length === 0) {
+                    throw new Error("No news items returned");
+                }
+
+                listEl.innerHTML = items.map((item) => {
+                    const isHigh = String(item.impact || '').toLowerCase().includes('high');
+                    const impactBadge = isHigh
+                        ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold">HIGH</span>`
+                        : `<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold">${item.impact || 'INFO'}</span>`;
+                    const combinedText = `${item.title} (${item.source}) - ${item.detail}`;
+                    const safeAttr = combinedText.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+                    return `
+                        <button type="button" onclick="useHeadlineForAnalysis('${safeAttr}')" class="w-full text-left p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 transition cursor-pointer space-y-0.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-bold text-slate-100 line-clamp-1">${item.title}</span>
+                                ${impactBadge}
+                            </div>
+                            <p class="text-[11px] text-slate-400 line-clamp-2">${item.detail}</p>
+                            <div class="text-[10px] text-amber-400/90 font-semibold">${item.source} • ${currentLang === 'km' ? "ចុចដើម្បីវិភាគ" : "Click to analyze"}</div>
+                        </button>
+                    `;
+                }).join('');
+
+                if (badgeEl) {
+                    badgeEl.textContent = currentLang === 'km' ? "ទាន់សម័យ ✓" : "Updated ✓";
+                    badgeEl.className = "text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+                }
+            } catch (err) {
+                listEl.innerHTML = `<div class="p-2 text-[11px] text-slate-400">${currentLang === 'km' ? "មិនអាចទាញព័ត៌មានផ្ទាល់បានភ្លាមៗ — អ្នកអាច Copy ពី ForexFactory ឬ Investing មក Paste ក្នុងប្រអប់ខាងក្រោមបានផ្ទាល់។" : "Live feed unavailable right now — paste news from ForexFactory or Investing into the box below."}</div>`;
+                if (badgeEl) {
+                    badgeEl.textContent = "Manual Paste Ready";
+                    badgeEl.className = "text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700";
+                }
+            } finally {
+                if (btnEl) btnEl.disabled = false;
+            }
+        }
+
+        async function analyzeAndAlertTelegram() {
+            await analyzeNewsWithGemini();
+            if (lastAiResponseData) {
+                await sendLastAiResultToTelegram();
+            }
+        }
+
+        async function fetchWithRetry(url, options, maxRetries = 4) {
+            let delay = 1000;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) return await response.json();
+                    if (response.status === 429 || response.status >= 500) {
+                        await new Promise(res => setTimeout(res, delay));
+                        delay *= 2;
+                        continue;
+                    }
+                    throw new Error(`HTTP error ${response.status}`);
+                } catch (err) {
+                    if (i === maxRetries - 1) throw err;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        async function analyzeChartWithGemini() {
+            if (!uploadedChartBase64) {
+                showToast(currentLang === 'km'
+                    ? "សូម Upload ឬ Paste (Ctrl+V) រូបភាពក្រាហ្វ MT5 ជាមុនសិន!"
+                    : "Please upload or paste (Ctrl+V) an MT5/TradingView chart screenshot first!");
+                return;
+            }
+
+            const tf = document.getElementById('chartImageTimeframe').value;
+            const userNote = document.getElementById('chartExtraNote').value.trim();
+
+            const loading = document.getElementById('aiLoadingBox');
+            const resultBox = document.getElementById('aiUnifiedResult');
+            const btn = document.getElementById('btnAnalyzeChart');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-60');
+            resultBox.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemInstruction = `You are a professional, conservative XAU/USD (Gold) technical analyst mentoring a beginner trader in Cambodia with a $10 Standard Cent account on Exness/MT5.
+Analyze the provided chart screenshot on timeframe ${tf}.
+Identify:
+1. Trend direction & market structure (Support/Resistance levels visible on the chart).
+2. Candlestick momentum and indicator signals (if visible).
+3. A clear, safe decision: BUY, SELL, or WAIT (choose WAIT if price is in the middle of nowhere, overextended, or unclear).
+4. Practical Entry Zone, Stop Loss (SL), and Take Profit (TP) numbers based on the price axis shown in the image (or "Wait for pullback" if WAIT).
+Provide clear, beginner-friendly explanations in both natural Khmer and simple English.`;
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: `Analyze this XAU/USD Gold chart screenshot (Timeframe: ${tf}). ${userNote ? 'User question: ' + userNote : ''}` },
+                        {
+                            inlineData: {
+                                mimeType: uploadedChartMime,
+                                data: uploadedChartBase64
+                            }
+                        }
+                    ]
+                }],
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            action: { type: "STRING", enum: ["BUY", "SELL", "WAIT"] },
+                            actionLabelKm: { type: "STRING" },
+                            actionLabelEn: { type: "STRING" },
+                            entryZone: { type: "STRING" },
+                            stopLoss: { type: "STRING" },
+                            takeProfit: { type: "STRING" },
+                            summaryKm: { type: "STRING" },
+                            summaryEn: { type: "STRING" },
+                            adviceKm: { type: "STRING" },
+                            adviceEn: { type: "STRING" }
+                        },
+                        required: [
+                            "action", "actionLabelKm", "actionLabelEn",
+                            "entryZone", "stopLoss", "takeProfit",
+                            "summaryKm", "summaryEn", "adviceKm", "adviceEn"
+                        ]
+                    }
+                }
+            };
+
+            try {
+                const data = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!rawText) throw new Error("No AI output");
+                const parsed = JSON.parse(rawText);
+                parsed.isChart = true;
+                lastAiResponseData = parsed;
+                renderUnifiedAiResult(parsed);
+            } catch (err) {
+                loading.classList.add('hidden');
+                showToast(currentLang === 'km'
+                    ? "មានបញ្ហាក្នុងការវិភាគរូបភាព សូមព្យាយាមម្តងទៀត!"
+                    : "Failed to analyze chart image. Please try again.");
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60');
+            }
+        }
+
+        async function analyzeNewsWithGemini() {
+            const newsText = document.getElementById('newsInput').value.trim();
+            if (!newsText) {
+                showToast(currentLang === 'km'
+                    ? "សូមបញ្ចូលអត្ថបទព័ត៌មានជាមុនសិន!"
+                    : "Please paste news text first!");
+                return;
+            }
+
+            const btn = document.getElementById('btnAnalyzeNews');
+            const loading = document.getElementById('aiLoadingBox');
+            const resultBox = document.getElementById('aiUnifiedResult');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-60');
+            resultBox.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemInstruction = `You are an expert Gold (XAU/USD) mentor helping a beginner trader in Cambodia with a $10 account.
+Analyze the economic news and determine whether it pushes Gold UP (BUY bias), DOWN (SELL bias), or causes dangerous volatility (WAIT).
+Provide clear, simple explanations in both natural Khmer and English.`;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Analyze this news for Gold (XAU/USD): "${newsText}"` }]
+                }],
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            action: { type: "STRING", enum: ["BUY", "SELL", "WAIT"] },
+                            actionLabelKm: { type: "STRING" },
+                            actionLabelEn: { type: "STRING" },
+                            summaryKm: { type: "STRING" },
+                            summaryEn: { type: "STRING" },
+                            adviceKm: { type: "STRING" },
+                            adviceEn: { type: "STRING" }
+                        },
+                        required: [
+                            "action", "actionLabelKm", "actionLabelEn",
+                            "summaryKm", "summaryEn", "adviceKm", "adviceEn"
+                        ]
+                    }
+                }
+            };
+
+            try {
+                const data = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!rawText) throw new Error("Empty AI response");
+                const parsed = JSON.parse(rawText);
+                parsed.isChart = false;
+                lastAiResponseData = parsed;
+                renderUnifiedAiResult(parsed);
+            } catch (error) {
+                loading.classList.add('hidden');
+                showToast(currentLang === 'km'
+                    ? "មានបញ្ហាក្នុងការភ្ជាប់ទៅ AI សូមព្យាយាមម្តងទៀត!"
+                    : "Error connecting to AI. Please try again.");
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60');
+            }
+        }
+
+        function renderUnifiedAiResult(data) {
+            const loading = document.getElementById('aiLoadingBox');
+            const resultBox = document.getElementById('aiUnifiedResult');
+            const banner = document.getElementById('aiVerdictBanner');
+            const actionText = document.getElementById('aiVerdictAction');
+            const actionIcon = document.getElementById('aiVerdictIcon');
+            const levelsGrid = document.getElementById('aiLevelsGrid');
+
+            loading.classList.add('hidden');
+            resultBox.classList.remove('hidden');
+
+            const isKm = currentLang === 'km';
+            actionText.textContent = isKm ? data.actionLabelKm : data.actionLabelEn;
+            document.getElementById('aiSummaryBody').textContent = isKm ? data.summaryKm : data.summaryEn;
+            document.getElementById('aiAdviceBody').textContent = isKm ? data.adviceKm : data.adviceEn;
+
+            if (data.isChart) {
+                levelsGrid.classList.remove('hidden');
+                levelsGrid.classList.add('grid');
+                document.getElementById('aiEntryVal').textContent = data.entryZone || '--';
+                document.getElementById('aiSlVal').textContent = data.stopLoss || '--';
+                document.getElementById('aiTpVal').textContent = data.takeProfit || '--';
+                const calcEl = document.getElementById('aiCalcMetricVal');
+                if (calcEl) calcEl.textContent = data.calcMetricText || '30 pips | 0.01 lot';
+            } else {
+                levelsGrid.classList.add('hidden');
+                levelsGrid.classList.remove('grid');
+            }
+
+            if (data.action === 'BUY') {
+                banner.className = "p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-emerald-300 flex items-center justify-between";
+                actionIcon.className = "p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400";
+                actionIcon.innerHTML = `<i data-lucide="trending-up" class="w-6 h-6"></i>`;
+            } else if (data.action === 'SELL') {
+                banner.className = "p-3.5 rounded-xl border border-rose-500/40 bg-rose-500/15 text-rose-300 flex items-center justify-between";
+                actionIcon.className = "p-2.5 rounded-xl bg-rose-500/20 text-rose-400";
+                actionIcon.innerHTML = `<i data-lucide="trending-down" class="w-6 h-6"></i>`;
+            } else if (data.action === 'CLOSE') {
+                banner.className = "p-3.5 rounded-xl border border-sky-500/40 bg-sky-500/15 text-sky-300 flex items-center justify-between";
+                actionIcon.className = "p-2.5 rounded-xl bg-sky-500/20 text-sky-400";
+                actionIcon.innerHTML = `<i data-lucide="x-circle" class="w-6 h-6"></i>`;
+            } else {
+                banner.className = "p-3.5 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-300 flex items-center justify-between";
+                actionIcon.className = "p-2.5 rounded-xl bg-amber-500/20 text-amber-400";
+                actionIcon.innerHTML = `<i data-lucide="hand" class="w-6 h-6"></i>`;
+            }
+
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        // 5. TELEGRAM ALERT & 24/24 MONITOR ENGINE
+        // ==========================================
+        let browserMonitorInterval = null;
+
+        function loadTelegramConfig() {
+            const savedToken = localStorage.getItem('xau_tg_token') || '';
+            const savedChatId = localStorage.getItem('xau_tg_chat_id') || '';
+            document.getElementById('tgBotToken').value = savedToken;
+            document.getElementById('tgChatId').value = savedChatId;
+            updateTelegramHeaderBadge();
+        }
+
+        function saveTelegramConfig() {
+            const token = document.getElementById('tgBotToken').value.trim();
+            const chatId = document.getElementById('tgChatId').value.trim();
+            if (!token || !chatId) {
+                showToast(currentLang === 'km'
+                    ? "សូមបញ្ចូលទាំង Bot Token និង Chat ID!"
+                    : "Please enter both Bot Token and Chat ID!");
+                return;
+            }
+            localStorage.setItem('xau_tg_token', token);
+            localStorage.setItem('xau_tg_chat_id', chatId);
+            updateTelegramHeaderBadge();
+            appendMonitorLog("Saved Telegram credentials locally.");
+            showToast(currentLang === 'km'
+                ? "បានរក្សាទុក Telegram Bot រួចរាល់!"
+                : "Telegram settings saved!");
+        }
+
+        function updateTelegramHeaderBadge() {
+            const token = localStorage.getItem('xau_tg_token');
+            const chatId = localStorage.getItem('xau_tg_chat_id');
+            const badge = document.getElementById('headerTgStatus');
+            const text = document.getElementById('headerTgText');
+            if (!badge || !text) return;
+
+            if (token && chatId) {
+                badge.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25 text-xs font-semibold transition cursor-pointer";
+                text.textContent = i18n[currentLang].tgHeaderOn;
+            } else {
+                badge.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-400 hover:bg-sky-500/20 text-xs font-semibold transition cursor-pointer";
+                text.textContent = i18n[currentLang].tgHeaderOff;
+            }
+        }
+
+        async function sendTelegramMessage(htmlMessage) {
+            const token = (document.getElementById('tgBotToken').value || localStorage.getItem('xau_tg_token') || '').trim();
+            const chatId = (document.getElementById('tgChatId').value || localStorage.getItem('xau_tg_chat_id') || '').trim();
+
+            if (!token || !chatId) {
+                showToast(currentLang === 'km'
+                    ? "សូមភ្ជាប់ Telegram Bot Token និង Chat ID ក្នុងផ្ទាំងទី ២ ជាមុនសិន!"
+                    : "Please configure Telegram Bot Token & Chat ID in Tab 2 first!");
+                switchTab('telegram');
+                return false;
+            }
+
+            try {
+                const url = `https://api.telegram.org/bot${token}/sendMessage`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: htmlMessage,
+                        parse_mode: 'HTML'
+                    })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    appendMonitorLog("Telegram Alert sent successfully.");
+                    return true;
+                } else {
+                    appendMonitorLog("Telegram API Error: " + (data.description || "Unknown"));
+                    showToast("Telegram Error: " + (data.description || "Check Token/Chat ID"));
+                    return false;
+                }
+            } catch (err) {
+                appendMonitorLog("Network error sending Telegram alert.");
+                showToast(currentLang === 'km'
+                    ? "បរាជ័យក្នុងការផ្ញើសារទៅ Telegram សូមពិនិត្យអ៊ីនធឺណិត!"
+                    : "Failed to send Telegram alert. Check connection.");
+                return false;
+            }
+        }
+
+        async function testTelegramAlert() {
+            saveTelegramConfig();
+            const msg = `🔔 <b>សាកល្បងប្រព័ន្ធជំនួយការ Trade មាស (XAU/USD)</b>\n✅ ការភ្ជាប់ Telegram Bot របស់អ្នកទទួលបានជោគជ័យ!\n💰 ដើមទុន៖ $10 (Standard Cent - MT5)\n🛡️ <i>ប្រព័ន្ធនឹងផ្ញើសារដាស់តឿនពេលមានការវិភាគ AI ឬ ព័ត៌មានមាសសំខាន់ៗ។</i>`;
+            const ok = await sendTelegramMessage(msg);
+            if (ok) {
+                showToast(currentLang === 'km'
+                    ? "ផ្ញើសារសាកល្បងចូល Telegram ជោគជ័យ! សូមពិនិត្យទូរសព្ទរបស់អ្នក។"
+                    : "Test alert sent! Check your Telegram app.");
+            }
+        }
+
+        async function sendLastAiResultToTelegram() {
+            if (!lastAiResponseData) return;
+            const d = lastAiResponseData;
+            let msg = `🤖 <b>លទ្ធផលវិភាគមាសពី AI (XAU/USD)</b>\n`;
+            msg += `📊 ការសម្រេចចិត្ត៖ <b>${d.actionLabelKm}</b>\n`;
+            if (d.isChart) {
+                msg += `🎯 Entry: <code>${d.entryZone}</code>\n🛑 SL: <code>${d.stopLoss}</code> | ✅ TP: <code>${d.takeProfit}</code>\n`;
+            }
+            msg += `\n📌 <b>សង្ខេប៖</b> ${d.summaryKm}\n\n🛡️ <b>ដំបូន្មាន ($10):</b> ${d.adviceKm}`;
+
+            const ok = await sendTelegramMessage(msg);
+            if (ok) {
+                showToast(currentLang === 'km'
+                    ? "បានផ្ញើលទ្ធផលវិភាគ AI ចូល Telegram រួចរាល់!"
+                    : "Sent AI analysis to Telegram!");
+            }
+        }
+
+        function appendMonitorLog(text) {
+            const box = document.getElementById('monitorLogBox');
+            if (!box) return;
+            const time = new Date().toLocaleTimeString();
+            box.innerHTML = `<div>[${time}] ${text}</div>` + box.innerHTML;
+        }
+
+        function toggleBrowserMonitor() {
+            const btn = document.getElementById('btnToggleMonitor');
+            const dot = document.getElementById('monitorPulseDot');
+
+            if (browserMonitorInterval) {
+                clearInterval(browserMonitorInterval);
+                browserMonitorInterval = null;
+                btn.textContent = "OFF";
+                btn.className = "px-3.5 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition cursor-pointer";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-slate-600";
+                appendMonitorLog("Auto-Monitor paused.");
+            } else {
+                const token = localStorage.getItem('xau_tg_token');
+                const chatId = localStorage.getItem('xau_tg_chat_id');
+                if (!token || !chatId) {
+                    showToast(currentLang === 'km'
+                        ? "សូមបញ្ចូល និង Save Telegram Token ជាមុនសិន!"
+                        : "Please save your Telegram Token & Chat ID first!");
+                    return;
+                }
+                btn.textContent = "ON (LIVE)";
+                btn.className = "px-3.5 py-2 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs shadow transition cursor-pointer";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-dot";
+                appendMonitorLog("24/24 Browser Monitor STARTED (Checks every 15 mins).");
+
+                runScheduledMarketCheck();
+                browserMonitorInterval = setInterval(runScheduledMarketCheck, 15 * 60 * 1000);
+            }
+        }
+
+        async function runScheduledMarketCheck() {
+            appendMonitorLog("Scanning Gold (XAU/USD) session & news factors...");
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const khTime = new Date(utc + (3600000 * 7));
+            const h = khTime.getHours();
+            const m = khTime.getMinutes();
+
+            if ((h === 14 || h === 19) && m >= 40) {
+                const sessionLabel = h === 14 ? "London Session (3:00 PM)" : "New York Peak Session (8:00 PM)";
+                await sendTelegramMessage(`⏰ <b>ដាស់តឿនម៉ោងទីផ្សារមាស (XAU/USD)</b>\n🔥 វគ្គ <b>${sessionLabel}</b> ជិតចាប់ផ្តើមហើយ!\n💡 សូមបើកក្រាហ្វ H1/M15 ពិនិត្យទិសដៅ និងដាក់ Stop Loss ជានិច្ច។`);
+            }
+        }
+
+        function copyCloudScript() {
+            const codeEl = document.getElementById('googleAppsScriptCode');
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeEl.textContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            showToast(currentLang === 'km'
+                ? "បានចម្លងកូដ 24/24 Cloud Script រួចរាល់! សូមយកទៅ Paste ក្នុង script.google.com"
+                : "24/7 Cloud Script copied! Paste it into script.google.com");
+        }
+
+        // ==========================================
+        // 6. LIVE CAMBODIA TIME (UTC+7) & SESSION
+        // ==========================================
+        function updateCambodiaClock() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const khTime = new Date(utc + (3600000 * 7));
+
+            const pad = (n) => String(n).padStart(2, '0');
+            const timeStr = `${pad(khTime.getHours())}:${pad(khTime.getMinutes())}:${pad(khTime.getSeconds())}`;
+
+            const clockDesktop = document.getElementById('cambodiaClock');
+            const clockMobile = document.getElementById('cambodiaClockMobile');
+            if (clockDesktop) clockDesktop.textContent = timeStr;
+            if (clockMobile) clockMobile.textContent = timeStr;
+
+            const hour = khTime.getHours();
+            let sessionKm = "ម៉ោងអាស៊ី (Asian)";
+            let sessionEn = "Asian Session";
+
+            if (hour >= 15 && hour < 19) {
+                sessionKm = "ម៉ោងឡុងដ៍ (London)";
+                sessionEn = "London Session";
+            } else if (hour >= 19 && hour < 24) {
+                sessionKm = "ម៉ោងអាមេរិក (NY Peak)";
+                sessionEn = "NY Peak Session";
+            } else if (hour >= 0 && hour < 4) {
+                sessionKm = "ចុងម៉ោងអាមេរិក (NY Late)";
+                sessionEn = "NY Late Session";
+            }
+
+            const label = currentLang === 'km' ? sessionKm : sessionEn;
+            const badgeDesktop = document.getElementById('liveSessionBadge');
+            const badgeMobile = document.getElementById('liveSessionBadgeMobile');
+            if (badgeDesktop) badgeDesktop.textContent = label;
+            if (badgeMobile) badgeMobile.textContent = label;
+        }
+
+        // ==========================================
+        // 7. CHECKLIST & $10 RISK CALCULATOR LOGIC
+        // ==========================================
+        function evaluateChecklist() {
+            const trend = document.querySelector('input[name="q1"]:checked')?.value;
+            const zone = document.querySelector('input[name="q2"]:checked')?.value;
+            const candle = document.querySelector('input[name="q3"]:checked')?.value;
+            const news = document.querySelector('input[name="q4"]:checked')?.value;
+            const session = document.querySelector('input[name="q5"]:checked')?.value;
+
+            const titleEl = document.getElementById('verdictTitle');
+            const subEl = document.getElementById('verdictSub');
+            const listEl = document.getElementById('verdictReasonsList');
+            const cardEl = document.getElementById('verdictCard');
+
+            if (!titleEl || !subEl || !listEl || !cardEl) return;
+
+            const isKm = currentLang === 'km';
+            if (!trend || !zone || !candle || !news || !session) {
+                titleEl.textContent = i18n[currentLang].verdictDefaultTitle;
+                subEl.textContent = i18n[currentLang].verdictDefaultSub;
+                listEl.innerHTML = `<li>• ${i18n[currentLang].verdictTipInitial}</li>`;
+                cardEl.className = "glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-slate-700";
+                return;
+            }
+
+            const reasons = [];
+            let decision = "WAIT";
+
+            if (news === "danger") {
+                decision = "WAIT";
+                reasons.push(isKm
+                    ? "⚠️ មានព័ត៌មានសេដ្ឋកិច្ចធំ (Red News USD) ជិតចេញ ឬ ទើបចេញ — តម្លៃមាសងាយលោតខ្លាំងលើគណនី $10។"
+                    : "⚠️ High-impact USD news is near or just released — Gold spikes can hurt a $10 account.");
+            } else if (trend === "up" && zone === "support" && candle === "bull") {
+                decision = "BUY";
+                reasons.push(isKm
+                    ? "✅ និន្នាការធំកំពុងឡើង (Uptrend) តម្លៃមកប៉ះ Support និងមានទៀនបៃតងបញ្ជាក់លើ M15។"
+                    : "✅ Higher timeframe is in an Uptrend, price is at Support, and M15 shows bullish confirmation.");
+            } else if (trend === "down" && zone === "resistance" && candle === "bear") {
+                decision = "SELL";
+                reasons.push(isKm
+                    ? "✅ និន្នាការធំកំពុងចុះ (Downtrend) តម្លៃមកប៉ះ Resistance និងមានទៀនក្រហមបញ្ជាក់លើ M15។"
+                    : "✅ Higher timeframe is in a Downtrend, price is at Resistance, and M15 shows bearish confirmation.");
+            } else {
+                decision = "WAIT";
+                reasons.push(isKm
+                    ? "⏸️ លក្ខខណ្ឌមិនទាន់គ្រប់គ្រាន់ ឬ មិនទាន់មានសញ្ញាទៀនបញ្ជាក់ច្បាស់នៅតំបន់សំខាន់។"
+                    : "⏸️ Setup conditions or candle confirmations at a key level are not aligned yet.");
+            }
+
+            if (session === "asia") {
+                reasons.push(isKm
+                    ? "🕒 ម៉ោងអាស៊ីជាទូទៅចលនាមាសយឺតជាងម៉ោង London / New York។"
+                    : "🕒 Asian session is typically slower and choppier than London / New York sessions.");
+            }
+
+            if (decision === "BUY") {
+                titleEl.textContent = isKm ? "គួរពិចារណា BUY (ទិញឡើង)" : "Consider BUY Setup";
+                subEl.textContent = isKm ? "សញ្ញាផ្សំគ្នាល្អ • ត្រូវដាក់ Stop Loss ជានិច្ច" : "Aligned setup • Always place a Stop Loss";
+                cardEl.className = "glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-emerald-500/40";
+            } else if (decision === "SELL") {
+                titleEl.textContent = isKm ? "គួរពិចារណា SELL (លក់ចុះ)" : "Consider SELL Setup";
+                subEl.textContent = isKm ? "សញ្ញាផ្សំគ្នាល្អ • ត្រូវដាក់ Stop Loss ជានិច្ច" : "Aligned setup • Always place a Stop Loss";
+                cardEl.className = "glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-rose-500/40";
+            } else {
+                titleEl.textContent = isKm ? "ឈប់រង់ចាំសិន (WAIT)" : "WAIT — Do Not Enter Yet";
+                subEl.textContent = isKm ? "ការពារទុន $10 របស់អ្នក រង់ចាំចំណុចច្បាស់ជាងនេះ" : "Protect your $10 capital and wait for a cleaner setup";
+                cardEl.className = "glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border border-amber-500/40";
+            }
+
+            listEl.innerHTML = reasons.map(r => `<li>• ${r}</li>`).join('');
+        }
+
+        function resetChecklist() {
+            document.querySelectorAll('#section-signal input[type="radio"]').forEach(el => {
+                el.checked = false;
+            });
+            evaluateChecklist();
+        }
+
+        function calculateRisk() {
+            const balanceInput = document.getElementById('accountBalance');
+            const riskInput = document.getElementById('riskPercent');
+            const slInput = document.getElementById('slPips');
+            const accTypeEl = document.querySelector('input[name="accType"]:checked');
+
+            const lotOut = document.getElementById('recommendedLot');
+            const lossOut = document.getElementById('maxLossAmount');
+            const survOut = document.getElementById('survivalTrades');
+            if (!balanceInput || !riskInput || !slInput || !lotOut || !lossOut || !survOut) return;
+
+            const balance = Math.max(0.1, parseFloat(balanceInput.value) || 10);
+            const riskPct = Math.max(0.1, Math.min(100, parseFloat(riskInput.value) || 5));
+            const slPips = Math.max(1, parseFloat(slInput.value) || 30);
+            const isCent = (accTypeEl?.value || 'cent') === 'cent';
+
+            const maxRiskUsd = (balance * riskPct) / 100;
+            // On standard XAU/USD, 1.00 standard lot ~= $10 per pip; on Standard Cent (USC), 1.00 USC lot ~= $0.10 per pip
+            const pipValuePerStandardLot = isCent ? 0.10 : 10.0;
+            const rawLot = maxRiskUsd / (slPips * pipValuePerStandardLot);
+            const safeLot = Math.max(0.01, Math.floor(rawLot * 100) / 100);
+            const actualLossUsd = safeLot * slPips * pipValuePerStandardLot;
+            const lossesBeforeBlowout = Math.max(1, Math.floor(balance / Math.max(0.01, actualLossUsd)));
+
+            lotOut.textContent = `${safeLot.toFixed(2)} ${isCent ? 'Lot (USC)' : 'Lot'}`;
+            lossOut.textContent = `$${actualLossUsd.toFixed(2)} USD`;
+            survOut.textContent = `${lossesBeforeBlowout}`;
+        }
+
+        setInterval(updateCambodiaClock, 1000);
+
+        let toastTimeout = null;
+        function showToast(message) {
+            const box = document.getElementById('toastBox');
+            const msgEl = document.getElementById('toastMessage');
+            if (!box || !msgEl) return;
+            msgEl.textContent = message;
+            box.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                box.classList.add('hidden');
+            }, 3500);
+        }
+
+        function switchTab(tabName) {
+            const tabs = ['live', 'telegram', 'signal', 'risk'];
+            tabs.forEach(t => {
+                const section = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (section) {
+                    if (t === tabName) section.classList.remove('hidden');
+                    else section.classList.add('hidden');
+                }
+                if (btn) {
+                    if (t === tabName) {
+                        btn.className = "tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-amber-500 text-slate-950 shadow-md";
+                    } else {
+                        btn.className = "tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-white";
+                    }
+                }
+            });
+            lucide.createIcons();
+        }
+
+        // Initialize on Window Load
+        window.onload = function () {
+            lucide.createIcons();
+            updateCambodiaClock();
+            calculateRisk();
+            loadTelegramConfig();
+            setLanguage('km');
+            initTradingViewChart('15');
+        };
+    </script>
+</body>
+</html>
